@@ -1,0 +1,29 @@
+_____ Running L* ________
+ --------- simple profiler: ---------
+
+------ learning statistics----------
+cache membership queries [queries]: 17847817
+learner membership queries [queries]: 29
+Learning rounds (#EQs):  0
+-------- model statistics ------
+States: 1
+Sigma: 28
+
+-------------------------------------------------------
+time:  35214
+____________========== Running Learn In Parts ===========_________________
+[[c1_heavy/ok()*ok()], [c1_intvWipe/off()], [c1_intvWipe/on()], [c1_little/ok()*ok()], [c1_manWipe/off()], [c1_non/ok()*ok()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c2_heavy/ok()*ok()], [c2_intvWipe/off()], [c2_intvWipe/on()], [c2_little/ok()*ok()], [c2_manWipe/off()], [c2_manWipe/on()], [c2_non/ok()*ok()], [c2_weather/heavyRain()], [c2_weather/noRain()], [c2_weather/rain()], [c2_wipe/fast()], [c2_wipe/intv()], [c2_wipe/off()], [c2_wipe/perm()], [c2_work/off()], [c2_work/on()]]time:  106337
+------ learning statistics----------
+Decomposed Learning  rounds [#]: 1
+learner membership queries [queries]: 17847984
+Total number of equivalence queries [#]: 28
+-------- model statistics ------
+States: 1
+Sigma: 28
+------ learning statistics (mqOracles) ----------
+Decomposed Learning  rounds [#]: 1
+cache membership queries [queries]: 17847789
+learner membership queries [queries]: 17847984
+Total number of equivalence queries [#]: 28
+
+Process finished with exit code 0

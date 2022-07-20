@@ -1,0 +1,20 @@
+R	S	W	sL	wL	(not sH)	(not wH)	(not pW)
+s1_w1 -- aa -> s1_w1
+s1_w1 -- bb -> s1_w1
+s1_w1 -- c*c -> s2_w1
+s2_w1 -- aa -> s2_w1
+s2_w1 -- bb -> s2_w1
+s2_w1 -- c*c -> s2_w1
+s2_w3 -- aa -> s2_w3
+s2_w3 -- bb -> s2_w4
+s2_w3 -- c*c -> s2_w4
+s2_w4 -- aa -> s2_w4
+s2_w4 -- bb -> s2_w4
+s2_w4 -- c*c -> s2_w4
+s1_w3 -- c*c -> s1_w3
+s1_w3 -- aa -> s1_w3
+s1_w3 -- bb -> s2_w4
+
+final states:
+q4
+q5

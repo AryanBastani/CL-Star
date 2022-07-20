@@ -1,0 +1,9 @@
+ProductName	FeaturesSelected(totValid:8 | max:2000)
+fsm_ws_1	R S W sL wL 
+fsm_ws_2	R S W sH wL 
+fsm_ws_3	R S W sH wH 
+fsm_ws_4	R S W sL wH 
+fsm_ws_5	R S W pW sL wL 
+fsm_ws_6	R S W pW sH wL 
+fsm_ws_7	R S W pW sL wH 
+fsm_ws_8	R S W pW sH wH 

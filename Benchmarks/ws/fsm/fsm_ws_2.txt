@@ -1,0 +1,62 @@
+R	S	W	sH	wL	(not sL)	(not wH)	(not pW)
+s1_w1 -- weather/noRain() -> s1_w1
+s1_w1 -- non/ok()*ok() -> s1_w1
+s1_w1 -- little/ok()*ok() -> s2_w1
+s1_w1 -- heavy/ok()*ok() -> s3_w1
+s1_w1 -- wipe/off() -> s1_w1
+s1_w1 -- work/off() -> s1_w1
+s1_w1 -- intvWipe/on() -> s1_w3
+s2_w1 -- weather/rain() -> s2_w1
+s2_w1 -- little/ok()*ok() -> s2_w1
+s2_w1 -- heavy/ok()*ok() -> s3_w1
+s2_w1 -- wipe/off() -> s2_w1
+s2_w1 -- work/off() -> s2_w1
+s2_w1 -- intvWipe/on() -> s2_w3
+s2_w1 -- non/ok()*ok() -> s1_w1
+s2_w3 -- weather/rain() -> s2_w3
+s2_w3 -- little/ok()*ok() -> s2_w4
+s2_w3 -- non/ok()*ok() -> s1_w3
+s2_w3 -- heavy/ok()*ok() -> s3_w4
+s2_w3 -- manWipe/off() -> s2_w3
+s2_w3 -- wipe/intv() -> s2_w3
+s2_w3 -- intvWipe/off() -> s2_w1
+s2_w4 -- weather/rain() -> s2_w4
+s2_w4 -- little/ok()*ok() -> s2_w4
+s2_w4 -- non/ok()*ok() -> s1_w3
+s2_w4 -- heavy/ok()*ok() -> s3_w4
+s2_w4 -- manWipe/off() -> s2_w4
+s2_w4 -- intvWipe/on() -> s2_w4
+s2_w4 -- wipe/slow() -> s2_w4
+s1_w3 -- weather/noRain() -> s1_w3
+s1_w3 -- non/ok()*ok() -> s1_w3
+s1_w3 -- little/ok()*ok() -> s2_w4
+s1_w3 -- heavy/ok()*ok() -> s3_w4
+s1_w3 -- manWipe/off() -> s1_w3
+s1_w3 -- wipe/intv() -> s1_w3
+s1_w3 -- intvWipe/off() -> s1_w1
+s3_w1 -- weather/heavyRain() -> s3_w1
+s3_w1 -- heavy/ok()*ok() -> s3_w1
+s3_w1 -- little/ok()*ok() -> s2_w1
+s3_w1 -- wipe/off() -> s3_w1
+s3_w1 -- work/off() -> s3_w1
+s3_w1 -- intvWipe/on() -> s3_w3
+s3_w1 -- non/ok()*ok() -> s1_w1
+s3_w3 -- weather/heavyRain() -> s3_w3
+s3_w3 -- heavy/ok()*ok() -> s3_w4
+s3_w3 -- non/ok()*ok() -> s1_w3
+s3_w3 -- little/ok()*ok() -> s2_w4
+s3_w3 -- manWipe/off() -> s3_w3
+s3_w3 -- wipe/intv() -> s3_w3
+s3_w3 -- intvWipe/off() -> s3_w1
+s3_w4 -- weather/heavyRain() -> s3_w4
+s3_w4 -- heavy/ok()*ok() -> s3_w4
+s3_w4 -- non/ok()*ok() -> s1_w3
+s3_w4 -- little/ok()*ok() -> s2_w4
+s3_w4 -- manWipe/off() -> s3_w4
+s3_w4 -- intvWipe/on() -> s3_w4
+s3_w4 -- wipe/slow() -> s3_w4
+
+
+final states:
+q2
+q5

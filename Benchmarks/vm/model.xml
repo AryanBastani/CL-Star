@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+    <properties/>
+    <struct>
+        <and mandatory="true" name="VM">
+            <description>
+Inputs={sugar@[VM];no_sugar@[VM];display_done@[VM];cup_taken@[VM];coffee@[COF];coffee@[CAP];cap@[CAP];pour_sugar@[COF];tea@[TEA];pour_tea@[TEA];pour_coffee@[COF or CAP];pour_milk@[CAP];ring@[TON];euro@[EUR];dollar@[DOL]}
+</description>
+            <or mandatory="true" name="BEV">
+                <feature name="COF"/>
+                <feature name="TEA"/>
+                <feature name="CAP"/>
+            </or>
+            <feature name="TON"/>
+            <alt mandatory="true" name="CUR">
+                <feature name="EUR"/>
+                <feature name="DOL"/>
+            </alt>
+        </and>
+    </struct>
+    <constraints>
+        <rule>
+            <imp>
+                <var>CAP</var>
+                <var>TON</var>
+            </imp>
+        </rule>
+    </constraints>
+    <calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
+    <comments/>
+    <featureOrder userDefined="false"/>
+</featureModel>

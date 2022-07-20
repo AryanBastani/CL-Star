@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+    <feature automatic="selected" name="VM"/>
+    <feature automatic="selected" name="BEV"/>
+    <feature manual="selected" name="COF"/>
+    <feature automatic="selected" name="CUR"/>
+    <feature manual="selected" name="EUR"/>
+    <feature automatic="unselected" name="DOL"/>
+</configuration>
