@@ -53,10 +53,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class Example6 {
     private static final int EXPLORATION_DEPTH = 4;
 
-    private static final String[] benchmarks = {"Benchmarks/ws/products_all.prtz",
-            "Benchmarks/ws/products_2wise.prtz",
-            "Benchmarks/ws/products_3wise.prtz",
-            "Benchmarks/ws/products_4wise.prtz"};
+    private static final String[] benchmarks = {
+//            "Benchmarks/ws/products_all.prtz",
+//            "Benchmarks/ws/products_2wise.prtz",
+//            "Benchmarks/ws/products_3wise.prtz",
+            "Benchmarks/ws/products_1wise.prtz"};
 
     public static void main(String[] args) {
         for (String name : benchmarks){

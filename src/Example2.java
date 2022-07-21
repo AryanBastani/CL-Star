@@ -48,7 +48,7 @@ import net.automatalib.words.impl.ListAlphabet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * This example shows the usage of product DFA and Lear In Parts algorithm.
+ * This example shows the usage of product DFA and Learn In Parts algorithm.
  *
  * @author faezeh_labbaf
  */
