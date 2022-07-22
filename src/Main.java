@@ -9,26 +9,8 @@ import java.util.List;
 
 public final class Main {
     public static void main(String[] args) throws IOException {
-        List<String> input = new ArrayList<>();    // input array
-        int k = 3;                             // sequence length
-
-        input.add("a");
-        input.add("r");
-        input.add("e");
-        input.add("c");
-        input.add("e");
-        input.add("c");
-        input.add("f");
-
-        List<String> subsets = input;
-
-        Word<String> ce = Word.fromList(input);
-
-        subsets.remove("f");
-        subsets.remove("e");
-        Alphabet<String> alph = Alphabets.fromList(subsets);
-        ce = projection(ce, alph);
-        System.out.println(ce);
+        Utils.writeDataLineByLine("/results.csv");
+        Utils.writeDataLineByLine("/results.csv");
 
 
     }

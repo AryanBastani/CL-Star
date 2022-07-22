@@ -73,7 +73,7 @@ public final class Example6 {
         ProductDFA<String> productDFA;
         try {
             productDFA = Utils.getInstance().loadProductDFA(file, "ws/");
-//            Visualization.visualize(dfa, dfa.getInputAlphabet());
+            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
         } catch (Exception e) {
             System.out.println("problem in loading file");
             throw new RuntimeException(e);
@@ -126,7 +126,7 @@ public final class Example6 {
 
         endTime = System.nanoTime();
         duration = (endTime - startTime);
-//        System.out.printf(lip.getSigmaFamily().toString());
+        System.out.printf(lip.getSigmaFamily().toString());
 //        time_msg = String.format("_____The Model learned by LIP algorithm in %s milliseconds", duration / 1000000);
 //        System.out.println(time_msg);
         System.out.println("time:  " + duration / 1000000);
@@ -136,18 +136,18 @@ public final class Example6 {
 //        System.out.println(" --------- simple profiler: ---------");
 //        System.out.println(SimpleProfiler.getResults());
 
-        // learning statistics
-        System.out.println("------ learning statistics---------- ");
-        System.out.println(lip.getRound_counter().getSummary());
-        System.out.println(lip.getMq_counter().getSummary());
-        System.out.println(lip.getEq_counter().getSummary());
+//        // learning statistics
+//        System.out.println("------ learning statistics---------- ");
+//        System.out.println(lip.getRound_counter().getSummary());
+//        System.out.println(lip.getMq_counter().getSummary());
+//        System.out.println(lip.getEq_counter().getSummary());
 
         // model statistics
         System.out.println("-------- model statistics ------");
         System.out.println("States: " + learnedDFA.size());
         System.out.println("Sigma: " + learnedDFA.getInputAlphabet().size());
 
-        System.out.println("------ learning statistics (mqOracles) ---------- ");
+        System.out.println("------ learning statistics --------- ");
         System.out.println(lip.getRound_counter().getSummary());
         System.out.println(mqOracle.getCounter().getSummary());
         System.out.println(mqOracle2.getStatisticalData().getSummary());

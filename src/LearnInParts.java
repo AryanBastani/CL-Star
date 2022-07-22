@@ -1,3 +1,4 @@
+import com.google.common.collect.Lists;
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
 import de.learnlib.api.oracle.EquivalenceOracle;
@@ -11,6 +12,7 @@ import de.learnlib.util.Experiment;
 import de.learnlib.util.statistics.SimpleProfiler;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
@@ -25,6 +27,35 @@ public class LearnInParts<I> {
     private EquivalenceOracle.DFAEquivalenceOracle<I> eqOracle;
     private final DFACounterOracle<I> mqOracle;
 //    private ClassicLStarDFA<I> lstar;
+    private List<Alphabet<I>> sigmaFamily;
+
+    public Alphabet<I> getAlphabet() {
+        return alphabet;
+    }
+
+    public void setAlphabet(Alphabet<I> alphabet) {
+        this.alphabet = alphabet;
+    }
+
+    public EquivalenceOracle.DFAEquivalenceOracle<I> getEqOracle() {
+        return eqOracle;
+    }
+
+    public void setEqOracle(EquivalenceOracle.DFAEquivalenceOracle<I> eqOracle) {
+        this.eqOracle = eqOracle;
+    }
+
+    public DFACounterOracle<I> getMqOracle() {
+        return mqOracle;
+    }
+
+    public List<Alphabet<I>> getSigmaFamily() {
+        return sigmaFamily;
+    }
+
+    public void setSigmaFamily(List<Alphabet<I>> sigmaFamily) {
+        this.sigmaFamily = sigmaFamily;
+    }
 
     private Counter mq_counter;
 
@@ -102,8 +133,8 @@ public class LearnInParts<I> {
 //        this.mq_counter = mqOracle.getStatisticalData();
 //    }
 
-    public CompactDFA<I> run(List<Alphabet<I>> sigmaFamily){
-
+    public CompactDFA<I> run(List<Alphabet<I>> sigmaF){
+        sigmaFamily = sigmaF;
         round_counter.increment();
         List<CompactDFA<I>> learnedParts = new ArrayList<>();
         ProductDFA<I> productDFA = null;
@@ -134,6 +165,10 @@ public class LearnInParts<I> {
 
         while ((ce = eqOracle.findCounterExample(hypothesis,
                 alphabet)) != null) {
+            System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
+            System.out.println(ce);
+            System.out.println();
+            System.out.println();
             round_counter.increment();
             eq_counter.increment();
             List<Alphabet<I>> dependentSets = dependent_sets(ce.getInput(), sigmaFamily, hypothesis);
@@ -168,13 +203,16 @@ public class LearnInParts<I> {
             learnedParts.add(partialH);
 
             productDFA = null;
-            for (CompactDFA<I> component : learnedParts){
+            for (CompactDFA<I> component : Lists.reverse(learnedParts)){
+//                Visualization.visualize(component, component.getInputAlphabet());
+
                 if (productDFA== null){
                     productDFA = new ProductDFA<>(component);
                 }
                 else productDFA.interleaving_parallel_composition(component);
             }
             hypothesis = (DFA<?, I>) productDFA.getDfa();
+//            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
 
         }
         System.out.println(sigmaFamily.toString());
@@ -200,7 +238,7 @@ public class LearnInParts<I> {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("           **********************************************************");
+        System.out.println("       **********************************************************");
 
     }
 

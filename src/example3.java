@@ -11,7 +11,7 @@ public final class example3 {
         File file = new File("src/dfa1.txt");
         try {
             CompactDFA dfa = Utils.getInstance().loadDFA(file);
-//            Visualization.visualize(dfa, dfa.getInputAlphabet());
+            Visualization.visualize(dfa, dfa.getInputAlphabet());
         } catch (Exception e) {
             System.out.println("problem in loading DFA");
             throw new RuntimeException(e);
