@@ -15,3 +15,8 @@ AGM	A	M	L	C	R	V	Y	P	N	S
 6 -- b/_1() -> 6
 6 -- c/_0() -> 6
 6 -- d/_0() -> 6
+
+
+final states:
+q2
+q5

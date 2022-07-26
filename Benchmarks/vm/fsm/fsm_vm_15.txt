@@ -131,3 +131,9 @@ s12 -- pour_milk/nok() -> s12
 s12 -- display_done/nok() -> s12
 s12 -- ring/nok() -> s12
 s12 -- cup_taken/ok() -> s0
+
+
+final states:
+q2
+q5
+q8

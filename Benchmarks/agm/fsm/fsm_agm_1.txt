@@ -8,3 +8,8 @@ AGM	A	M	L	C	R	V	Y	P	B	(not S)
 5 -- a/_1() -> 4
 5 -- c/_1() -> 1
 5 -- b/_0() -> 5
+
+
+final states:
+q2
+q5
