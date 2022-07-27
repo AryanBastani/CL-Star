@@ -1,4 +1,5 @@
 //import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
+import de.learnlib.filter.statistic.sul.SymbolCounterSUL;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
@@ -9,8 +10,8 @@ import java.util.List;
 
 public final class Main {
     public static void main(String[] args) throws IOException {
-        Utils.writeDataLineByLine("/results.csv");
-        Utils.writeDataLineByLine("/results.csv");
+//        Utils.writeDataLineByLine("Benchmarks/results.csv");
+//        Utils.writeDataLineByLine("Benchmarks/results.csv");
 
 
     }
@@ -20,7 +21,6 @@ public final class Main {
         for (String action: word ){
             System.out.println(action);
             if (alphabet.contains(action)){
-                System.out.println("Keeping this action");
                 input.add(action);
             }
         }

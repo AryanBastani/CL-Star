@@ -182,7 +182,7 @@ public class LearnInParts<I> {
                 trashParts.add(learnedParts.remove(i));
                 mergedSet.addAll(sigmai);
             }
-            Alphabet<I> mergedAlphabet = Alphabets.fromCollection(mergedSet);
+            Alphabet<I> mergedAlphabet = Alphabets.fromList(mergedSet);
 
             // Learn the single merged component
             ClassicLStarDFA<I> partialLstar = new ClassicLStarDFABuilder<I>()
@@ -250,7 +250,7 @@ public class LearnInParts<I> {
 
             mergedSet.addAll(sigmai);
         }
-        Alphabet mergedAlphabet = Alphabets.fromCollection(mergedSet);
+        Alphabet mergedAlphabet = Alphabets.fromList(mergedSet);
         sigmaFamily.add(mergedAlphabet);
         return sigmaFamily;
     }
@@ -258,15 +258,15 @@ public class LearnInParts<I> {
     private List<Alphabet<I>> dependent_sets(Word<I> ce, List<Alphabet<I>> sigmaFamily, DFA hypothesis){
         ce = this.cut_ce(ce, hypothesis);
         List<Alphabet<I>>  involvedSets = involved_sets(ce, sigmaFamily);
-        List<Alphabet<I>> subsets = new ArrayList();
+        List<ArrayList> subsets = new ArrayList();
 
         for(int k=2; k<involvedSets.size(); k++){
             subsets = k_combinations(k, involvedSets);
-            for(Object list: subsets){
-                Alphabet<I> merged_list = merge_parts(subsets);
+            for(ArrayList list: subsets){
+                Alphabet<I> merged_list = merge_parts(list);
                 Word<I> ce_prime = projection(ce, merged_list);
                 if (check_for_ce(ce_prime, hypothesis)){
-                    return subsets;
+                    return list;
                 }
 
             }
@@ -322,11 +322,10 @@ public class LearnInParts<I> {
         for (Alphabet<I> sigmai : list){
             mergedSet.addAll(sigmai);
         }
-
-        return Alphabets.fromCollection(mergedSet);
+        return Alphabets.fromList(mergedSet);
     }
 
-    private List<Alphabet<I>> k_combinations(int k, List<Alphabet<I>> input){
+    private List<ArrayList> k_combinations(int k, List<Alphabet<I>> input){
         List subsets = new ArrayList<>();
 
         int[] s = new int[k];                  // here we'll keep indices

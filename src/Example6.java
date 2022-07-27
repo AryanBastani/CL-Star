@@ -19,36 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
-import de.learnlib.api.oracle.EquivalenceOracle;
-import de.learnlib.api.oracle.MembershipOracle;
-import de.learnlib.api.query.DefaultQuery;
-import de.learnlib.datastructure.observationtable.OTUtils;
-import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
-import de.learnlib.filter.cache.dfa.DFACacheOracle;
-import de.learnlib.filter.cache.dfa.DFACaches;
-import de.learnlib.filter.statistic.oracle.DFACounterOracle;
-import de.learnlib.oracle.equivalence.DFAEQOracleChain;
-import de.learnlib.oracle.equivalence.DFAWMethodEQOracle;
-import de.learnlib.oracle.equivalence.EQOracleChain;
-import de.learnlib.oracle.membership.SimulatorOracle;
-import de.learnlib.util.Experiment;
-import de.learnlib.util.statistics.SimpleProfiler;
 import net.automatalib.automata.fsa.DFA;
-import net.automatalib.automata.fsa.impl.compact.CompactDFA;
-import net.automatalib.serialization.dot.GraphDOT;
-import net.automatalib.util.automata.builders.AutomatonBuilders;
-import net.automatalib.visualization.Visualization;
-import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.Alphabets;
-import net.automatalib.words.impl.ListAlphabet;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class Example6 {
     private static final int EXPLORATION_DEPTH = 4;

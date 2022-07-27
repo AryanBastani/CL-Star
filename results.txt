@@ -1,29 +1,106 @@
-_____ Running L* ________
- --------- simple profiler: ---------
-
+______________========== Running L* ==========____________
 ------ learning statistics----------
-cache membership queries [queries]: 17847817
-learner membership queries [queries]: 29
-Learning rounds (#EQs):  0
+cache membership queries [queries]: 135806
+learner membership queries [queries]: 74
+Learning rounds (#EQs):  1
 -------- model statistics ------
-States: 1
-Sigma: 28
+States: 3
+Sigma: 12
+time:  1070
+
+__________________________************************************_________________________________
+[[c1_manWipe/off()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c1_non/ok()*ok(), c1_little/ok()*ok(), c1_intvWipe/off(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]
+[[c1_manWipe/off()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c1_non/ok()*ok(), c1_little/ok()*ok(), c1_intvWipe/off(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]
+time:  2520262
+-------- model statistics ------
+States: 3
+Sigma: 12
+------ learning statistics (mqOracles) ----------
+Decomposed Learning  rounds [#]: 5
+cache membership queries [queries]: 124845
+learner membership queries [queries]: 143651
+Total number of equivalence queries [#]: 24
+
+*******************************************************************************************************
+steps = 4:
+______________========== Running L* ==========____________
+------ learning statistics----------
+cache membership queries [queries]: 1628798
+learner membership queries [queries]: 74
+Learning rounds (#EQs):  1
+-------- model statistics ------
+States: 3
+Sigma: 12
+
+time:  2244
+____________========== Running Learn In Parts ===========_________________
+[[c1_manWipe/off()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c1_non/ok()*ok(), c1_little/ok()*ok(), c1_intvWipe/off(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]
+[[c1_manWipe/off()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c1_non/ok()*ok(), c1_little/ok()*ok(), c1_intvWipe/off(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]time:  8064
+-------- model statistics ------
+States: 3
+Sigma: 12
+------ learning statistics ---------
+Decomposed Learning  rounds [#]: 5
+cache membership queries [queries]: 1484141
+learner membership queries [queries]: 1663199
+Total number of equivalence queries [#]: 24
+
+*************************************************************************************************************
+ws_8:
+
+______________========== Running L* ==========____________
+------ learning statistics----------
+cache membership queries [queries]: 78305055
+learner membership queries [queries]: 2312
+Learning rounds (#EQs):  6
+-------- model statistics ------
+States: 10
+Sigma: 16
+time:  86500
+____________========== Running Learn In Parts ===========_________________
+[[c1_weather/heavyRain()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/fast()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/perm()], [c1_work/off()], [c1_work/on()], [c1_manWipe/off(), c1_intvWipe/off(), c1_non/ok()*ok(), c1_little/ok()*ok(), c1_manWipe/on(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]
+[[c1_weather/heavyRain()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/fast()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/perm()], [c1_work/off()], [c1_work/on()], [c1_manWipe/off(), c1_intvWipe/off(), c1_non/ok()*ok(), c1_little/ok()*ok(), c1_manWipe/on(), c1_heavy/ok()*ok(), c1_intvWipe/on()]]time:  240014
+-------- model statistics ------
+States: 10
+Sigma: 16
+------ learning statistics ---------
+Decomposed Learning  rounds [#]: 7
+cache membership queries [queries]: 70214469
+learner membership queries [queries]: 80455769
+Total number of equivalence queries [#]: 45
+
+
+
+
+
+Example 2:
 
 -------------------------------------------------------
-time:  35214
-____________========== Running Learn In Parts ===========_________________
-[[c1_heavy/ok()*ok()], [c1_intvWipe/off()], [c1_intvWipe/on()], [c1_little/ok()*ok()], [c1_manWipe/off()], [c1_non/ok()*ok()], [c1_weather/noRain()], [c1_weather/rain()], [c1_wipe/intv()], [c1_wipe/off()], [c1_wipe/slow()], [c1_work/off()], [c2_heavy/ok()*ok()], [c2_intvWipe/off()], [c2_intvWipe/on()], [c2_little/ok()*ok()], [c2_manWipe/off()], [c2_manWipe/on()], [c2_non/ok()*ok()], [c2_weather/heavyRain()], [c2_weather/noRain()], [c2_weather/rain()], [c2_wipe/fast()], [c2_wipe/intv()], [c2_wipe/off()], [c2_wipe/perm()], [c2_work/off()], [c2_work/on()]]time:  106337
+_______ Running L* ________
+Refining using Query[ε|x a / true]
+Refining using Query[ε|b x y / true]
+-------------------------------------------------------
 ------ learning statistics----------
-Decomposed Learning  rounds [#]: 1
-learner membership queries [queries]: 17847984
-Total number of equivalence queries [#]: 28
--------- model statistics ------
-States: 1
-Sigma: 28
------- learning statistics (mqOracles) ----------
-Decomposed Learning  rounds [#]: 1
-cache membership queries [queries]: 17847789
-learner membership queries [queries]: 17847984
-Total number of equivalence queries [#]: 28
+cache membership queries [queries]: 16552
+learner membership queries [queries]: 75
 
-Process finished with exit code 0
+-------------------------------------------------------
+_____The Model learned by L* algorithm in 386 milliseconds _____
+----------------------------**********-------------------------------------
+_______ Running Learn In Parts ________
+[a, b], [x, y]]
+_____The Model learned by LIP algorithm in 559 milliseconds
+------ learning statistics----------
+Decomposed Learning  rounds [#]: 3
+learner membership queries [queries]: 16700
+Total number of equivalence queries [#]: 8
+-------- model statistics ------
+States: 4
+Sigma: 4
+------ learning statistics (mqOracles) ----------
+Decomposed Learning  rounds [#]: 3
+cache membership queries [queries]: 11093
+learner membership queries [queries]: 16700
+Total number of equivalence queries [#]: 8
+
+
