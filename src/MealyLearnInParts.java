@@ -1,17 +1,11 @@
 import com.google.common.collect.Lists;
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
-import de.learnlib.datastructure.observationtable.OTUtils;
-import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
+import de.learnlib.api.statistic.StatisticSUL;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.util.Experiment;
-import de.learnlib.util.statistics.SimpleProfiler;
-import net.automatalib.automata.fsa.DFA;
-import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.words.Alphabet;
@@ -19,39 +13,43 @@ import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words.impl.ListAlphabet;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.learnlib.api.oracle.MembershipOracle;
 
 import java.util.*;
+import java.util.logging.Logger;
+
 public class MealyLearnInParts {
     private Alphabet<String> alphabet;
-    //    private MembershipOracle.DFAMembershipOracle<String> sul;
     private EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle ;
-
+    private EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> partialEqOracle ;
     private MembershipOracle<String, Word<Word<String>>> mqOracle;
     //    private ClassicLStarDFA<String> lstar;
     private List<Alphabet<String>> sigmaFamily;
     private Counter round_counter;
     private Counter eq_counter;
+    private Logger logger;
 
 
     public MealyLearnInParts(Alphabet<String> alphabet,
                              MembershipOracle<String, Word<Word<String>>> mqOracle,
-                             EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle ){
+                             EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle,
+                             EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> partialEqOracle,
+                             Logger logger){
+
         this.eqOracle = eqOracle;
+        this.partialEqOracle = partialEqOracle;
         this.alphabet = alphabet;
         this.mqOracle = mqOracle;
+        this.logger = logger;
 
         this.round_counter = new Counter("Decomposed Learning  rounds", "#");
         this.eq_counter = new Counter("Total number of equivalence queries", "#");
-//        this.mq_counter = mqOracle.getStatisticalData();
     }
 
-    public CompactMealy<String, Word<String>> run(){
+    public CompactMealy<String, Word<String>> run(StatisticSUL<String, Word<String>> eq_sym_counter){
         List<Alphabet<String>> initialSimaF = new ArrayList<>();
         for (String action : this.alphabet) {
             Alphabet<String> sigmai = new ListAlphabet<String>(Arrays.asList(action));
@@ -67,14 +65,18 @@ public class MealyLearnInParts {
             builder.setOracle(mqOracle);
             ExtensibleLStarMealy<String, Word<String>> learner = builder.create();
             // The experiment will execute the main loop of active learning
-            Experiment.MealyExperiment<String, Word<String>> experiment = new Experiment.MealyExperiment<String, Word<String>>(learner, eqOracle,
-                    sigmai);
+            Experiment.MealyExperiment<String, Word<String>> experiment = new Experiment.MealyExperiment<String, Word<String>>(
+                    learner, eqOracle, sigmai);
+            Long pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
             experiment.run();
 
             // get learned model
             CompactMealy<String, Word<String>> partialH = (CompactMealy<String, Word<String>>) experiment.getFinalHypothesis();
 
             eq_counter.increment(experiment.getRounds().getCount());
+            Long post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
+            logger.info("Learned partialH with " + partialH.size() + " states,   " +
+                    (post_eq_sym - pre_eq_sym) + " symbols in " + experiment.getRounds().getCount() + " rounds" );
 
             learnedParts.add(partialH);
             if (productMealy== null){
@@ -83,17 +85,25 @@ public class MealyLearnInParts {
             else productMealy.mergeFSMs(partialH);
         }
 
+        assert productMealy != null;
         CompactMealy<String, Word<String>> hypothesis = productMealy.getMachine();
         @Nullable DefaultQuery<String, Word<Word<String>>> ce;;
 
+        Long pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
+        Long post_eq_sym;
         while ((ce = eqOracle.findCounterExample(hypothesis,
                 alphabet)) != null) {
             System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
-            System.out.println(ce);
+            logger.info("round " + round_counter.getCount() + "  counterexample:  " + ce);
+            System.out.println("round " + round_counter.getCount() + "  counterexample:  " + ce);
             System.out.println();
             System.out.println();
             round_counter.increment();
             eq_counter.increment();
+            post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
+            logger.info("Search for ce,  " + hypothesis.size() + " states,   " +
+                    (post_eq_sym - pre_eq_sym) + " symbols" );
+
             List<Alphabet<String>> dependentSets = dependent_sets(ce.getInput(), sigmaFamily, hypothesis);
 
 //            sigmaFamily = composition(sigmaFamily, dependentSets);
@@ -108,17 +118,22 @@ public class MealyLearnInParts {
             Alphabet<String> mergedAlphabet = Alphabets.fromList(mergedSet);
 
             // Learn the single merged component
+            pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
             ExtensibleLStarMealyBuilder<String, Word<String>> builder = new ExtensibleLStarMealyBuilder<String, Word<String>>();
             builder.setAlphabet(mergedAlphabet);
             builder.setOracle(mqOracle);
             ExtensibleLStarMealy<String, Word<String>> learner = builder.create();
             // The experiment will execute the main loop of active learning
-            Experiment.MealyExperiment<String, Word<String>> experiment = new Experiment.MealyExperiment<String, Word<String>>(learner, eqOracle,
-                    mergedAlphabet);
+            Experiment.MealyExperiment<String, Word<String>> experiment =
+                    new Experiment.MealyExperiment<String, Word<String>>(learner, partialEqOracle, mergedAlphabet);
             experiment.run();
             // get learned model
             CompactMealy<String, Word<String>> partialH = (CompactMealy<String, Word<String>>) experiment.getFinalHypothesis();
             eq_counter.increment(experiment.getRounds().getCount());
+            post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
+            logger.info("Learned partialH with " + partialH.size() + "states,   " +
+                    (post_eq_sym - pre_eq_sym) + "  symbols in " + experiment.getRounds().getCount() + " rounds" );
+
 
             sigmaFamily.add(mergedAlphabet);
             learnedParts.add(partialH);
@@ -134,10 +149,18 @@ public class MealyLearnInParts {
             }
             hypothesis = productMealy.getMachine();
 //            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
+            pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
 
         }
-        System.out.println(sigmaFamily.toString());
-        return productMealy.getMachine();
+        CompactMealy final_H = productMealy.getMachine();
+        logger.info("___ Decomposed Learning finished ___");
+        logger.info(sigmaFamily.toString());
+        String log_msg = "";
+        for (Alphabet s: sigmaFamily){
+            log_msg += "  - component with " + s.size() + " inputs: " + s + " and " +  final_H.size() + " states" + "\br";
+        }
+        logger.info(log_msg);
+        return final_H;
     }
 
 //    private void computeCounters(Experiment.DFAExperiment<String> experiment, ClassicLStarDFA<String> lstar ) {
@@ -275,12 +298,20 @@ public class MealyLearnInParts {
         this.alphabet = alphabet;
     }
 
+    public void setEqOracle(EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle) {
+        this.eqOracle = eqOracle;
+    }
+
     public EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> getEqOracle() {
         return eqOracle;
     }
 
-    public void setEqOracle(EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle) {
-        this.eqOracle = eqOracle;
+    public void setPartialEqOracle(EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle) {
+        this.partialEqOracle = eqOracle;
+    }
+
+    public EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> getPartialEqOracle() {
+        return partialEqOracle;
     }
 
     public MembershipOracle<String, Word<Word<String>>> getMqOracle() {

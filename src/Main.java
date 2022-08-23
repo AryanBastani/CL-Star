@@ -5,15 +5,42 @@ import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public final class Main {
     public static void main(String[] args) throws IOException {
-//        Utils.writeDataLineByLine("Benchmarks/results.csv");
-//        Utils.writeDataLineByLine("Benchmarks/results.csv");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now));
+        Logger logger = Logger.getLogger(dtf.format(now).toString());
+        FileHandler fh;
+        try {
+            String path = "logs/" + dtf.format(now) + ".log";
+            // This block configure the logger with handler and formatter
+            fh = new FileHandler(path);
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            myLog(logger);
+            myLog(logger);
+            // the following statement is used to log any messages
+            logger.info("My first log");
 
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private static void myLog(Logger logger) {
+        logger.info("Hi How r u?");
     }
 
     private static Word<String> projection(Word<String> word, Alphabet<String> alphabet){

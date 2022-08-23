@@ -584,7 +584,24 @@ public class Utils {
         return productMealy;
     }
 
+    public static String ExtractValue(String string_1) {
+        // TODO Auto-generated method stub
+        int value_1 = 0;
+        int j = string_1.lastIndexOf(" ");
+        String string_2 = "";
+        if (j >= 0) {
+            string_2 = string_1.substring(j + 1);
+        }
+        return string_2;
+    }
 
+    public static void writeFile(String filePath, String line) throws IOException {
+        File myObj = new File(filePath);
+        FileWriter myWriter = new FileWriter(myObj, true);
+        myWriter.write(line);
+        myWriter.close();
+    }
+    
     public static void writeDataLineByLine(String filePath, String[] data) throws IOException {
         // first create file object for file placed at location
         // specified by filepath

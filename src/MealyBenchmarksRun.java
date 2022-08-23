@@ -1,4 +1,8 @@
-
+//
+///5wise_18.txt
+///4wise_19.txt
+///5wise_20.txt
+///5wise_1.txt
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.SUL;
@@ -9,7 +13,11 @@ import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.filter.statistic.sul.ResetCounterSUL;
 import de.learnlib.filter.statistic.sul.SymbolCounterSUL;
+import de.learnlib.oracle.equivalence.RandomWMethodEQOracle;
+import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
+import de.learnlib.oracle.equivalence.WMethodEQOracle;
 import de.learnlib.oracle.equivalence.WpMethodEQOracle;
+import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import de.learnlib.util.statistics.SimpleProfiler;
@@ -18,6 +26,7 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.serialization.InputModelDeserializer;
 import net.automatalib.serialization.dot.DOTParsers;
+import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.visualization.VisualizationHelper;
 import net.automatalib.words.Alphabet;
@@ -27,47 +36,53 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class MealyBenchmarksRun {
 
-    private static final String[] benchmarks = {
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_2.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_18.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_1.txt",
+    private static final String[] big_fsms = {
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_15.txt ",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_7.txt ",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_4.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_13.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_20.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_18.txt",
+    };
+    private static final String[] benchmarks = {
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_4.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_5.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_6.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_7.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_8.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_9.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_10.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_11.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_11.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_12.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_13.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_14.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_13.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_16.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_17.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_18.txt",
-//            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_19.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_20.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_1.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_2.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_18.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_3.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_4.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_5.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_6.txt",
@@ -77,6 +92,7 @@ public class MealyBenchmarksRun {
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_10.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_11.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_13.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_14.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_16.txt",
@@ -103,6 +119,7 @@ public class MealyBenchmarksRun {
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_18.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_20.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_1.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_2.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_3.txt",
@@ -120,6 +137,12 @@ public class MealyBenchmarksRun {
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_16.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_3.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_4.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_5.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_6.txt",
@@ -194,9 +217,11 @@ public class MealyBenchmarksRun {
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_16.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_17.txt",
-
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_20.txt"
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_20.txt",
     };
+
 
     public static int FILE_NAME = 0;
     public static int STATES = 1;
@@ -219,18 +244,39 @@ public class MealyBenchmarksRun {
     public static int LIP_STATES = 18;
     public static int COMPONENTS = 19 ;
     public static int ROUNDS = 20;
-
+    public static int METHOD = 21;
+    public static int CACHE = 22;
+    public static int DATA_LEN = 23;
     public static String[] data;
 
-    private static final int EXPLORATION_DEPTH = 4;
 
-    private static final String RESULTS_PATH = "Benchmarks/mealyResults.csv";
-
+    private static Boolean CACHE_ENABLE = true;
+    private static String EQ_METHOD = "wp";
+    private static final String RESULTS_PATH = "Results/Final_run/rnd_wp700_treak.csv";
+    private static Logger logger;
 
 
     public static void main(String[] args) throws IOException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now));
+        logger = Logger.getLogger(dtf.format(now).toString());
+        FileHandler fh;
+        try {
+            String path = "logs/" + dtf.format(now) + ".log";
+            fh = new FileHandler(path);
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         for(String c : benchmarks){
-            data = new String[21];
+            data = new String[DATA_LEN];
             File file = new File(c);
             data[FILE_NAME] = c;
             CompactMealy<String, Word<String>> target;
@@ -238,28 +284,46 @@ public class MealyBenchmarksRun {
                 target = Utils.getInstance().loadProductMealy(file, "BCS_SPL/Complete_FSM_files/").fsm;
 //                Visualization.visualize(target, target.getInputAlphabet());
             } catch (Exception e) {
-                System.out.println("problem in loading file");
-                System.out.println(c);
+                logger.warning("problem in loading file");
+                logger.warning(c);
                 continue;
 //                throw new RuntimeException(e);
             }
-            System.out.println(target.size());
-            System.out.println(c);
+            if (target.size()>700){
+//                if (target.size()<1000)
+//                System.out.println("");
+//                System.out.println("------------------- BIG FSM FILE _____________________________ ");
+//                System.out.println(c);
+//                System.out.println();
+//                    Utils.writeFile("Benchmarks/mediumFSMs.txt", c  + "   " +  target.size() + "\n"  );
+//                    logger.info("BIG FSM:   " + c  + "   " +  target.size() + "\n"  );
+                continue;
+            }
+            logger.info("FSM from : " + c);
+            logger.info("#States: " + target.size());
             data[STATES] = Integer.toString(target.size());
             data[INPUTS] = Integer.toString(target.numInputs());
-//          // Shuffle the alphabet
-            Alphabet<String> alph = target.getInputAlphabet();
-            String[] alphArr =  alph.toArray(new String[alph.size()]);
-            Collections.shuffle(Arrays.asList(alphArr));
-            Alphabet<String> alphabet = Alphabets.fromArray(alphArr);
+            Alphabet<String> alphabet = target.getInputAlphabet();
 
-            learnProductMealy(target, alphabet);
-            learnMealyInParts(target, alphabet);
-            Utils.writeDataLineByLine(RESULTS_PATH, data);
+            String[] eq_methods = {"rndWalk" ,"rndWalk", "rndWalk", "rndWalk" };
+            for(String method:eq_methods){
+                logger.info("Partial EQ : " + method);
+                logger.info("EQ : " + EQ_METHOD);
+
+                //          // Shuffle the alphabet
+                String[] alphArr =  alphabet.toArray(new String[alphabet.size()]);
+                Collections.shuffle(Arrays.asList(alphArr));
+                alphabet = Alphabets.fromArray(alphArr);
+                data[METHOD] = method;
+                data[CACHE] = CACHE_ENABLE.toString();
+                learnProductMealy(target, alphabet);
+                learnMealyInParts(target, alphabet, method );
+                Utils.writeDataLineByLine(RESULTS_PATH, data);
+            }
         }
     }
 
-    public static void learnMealyInParts(CompactMealy mealyss, Alphabet<String> alphabet){
+    public static void learnMealyInParts(CompactMealy mealyss, Alphabet<String> alphabet, String partial_eq_method){
 
         Utils.getInstance();
         // SUL simulator
@@ -277,8 +341,10 @@ public class MealyBenchmarksRun {
         SUL<String, Word<String>> mq_sul = mq_rst;
 
         // use caching to avoid duplicate queries
-        // SULs for associating the IncrementalMealyBuilder 'mq_cbuilder' to MQs
-        mq_sul = SULCache.createDAGCache(alphabet, mq_rst);
+        // SULs for associating the IncrementalMealyBuilder 'mq_builder' to MQs
+        if(CACHE_ENABLE){
+            mq_sul = SULCache.createDAGCache(alphabet, mq_rst);
+        }
 
         MembershipOracle<String, Word<Word<String>>> mqOracle = new SULOracle<String, Word<String>>(mq_sul);
 
@@ -294,35 +360,39 @@ public class MealyBenchmarksRun {
         SUL<String, Word<String>> eq_sul = eq_rst;
 
         // SULs for associating the IncrementalMealyBuilder 'cbuilder' to EQs
-        eq_sul = SULCache.createDAGCache(alphabet, eq_rst);
+        if (CACHE_ENABLE){
+            eq_sul = SULCache.createDAGCache(alphabet, eq_rst);
+        }
 
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle = null;
-        eqOracle = buildEqOracle(eq_sul);
+        EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> partialEqOracle = null;
+        partialEqOracle = buildEqOracle(eq_sul, partial_eq_method);
+        eqOracle = buildEqOracle(eq_sul, EQ_METHOD);
 
 
-        MealyLearnInParts LIP = new MealyLearnInParts(alphabet, mqOracle, eqOracle);
-        CompactMealy result = LIP.run();
+        MealyLearnInParts LIP = new MealyLearnInParts(alphabet, mqOracle, eqOracle, partialEqOracle, logger);
+        CompactMealy result = LIP.run(eq_sym);
 
 
 
+        logger.info("Rounds: " + LIP.getRound_counter().getCount());
+        logger.info("#EQs: " + LIP.getEq_counter().getCount());
+        logger.info(mq_rst.getStatisticalData().toString());
+        logger.info(mq_sym.getStatisticalData().toString());
+        logger.info(eq_rst.getStatisticalData().toString());
+        logger.info(eq_sym.getStatisticalData().toString());
 //        // statistics array
         data[ROUNDS] = String.valueOf(LIP.getRound_counter().getCount());
-        data[LIP_MQ_RST] = String.valueOf(ExtractValue(mq_rst.getStatisticalData().getSummary()));
-        data[LIP_MQ_SYM] = String.valueOf(ExtractValue(mq_sym.getStatisticalData().getSummary()));
-        data[LIP_EQ_RST] = String.valueOf(ExtractValue(eq_rst.getStatisticalData().getSummary()));
-        data[LIP_EQ_SYM] = String.valueOf(ExtractValue(eq_sym.getStatisticalData().getSummary()));
+        data[LIP_MQ_RST] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[LIP_MQ_SYM] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[LIP_EQ_RST] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[LIP_EQ_SYM] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
         data[LIP_EQs] = String.valueOf(LIP.getEq_counter().getCount());
         data[LIP_STATES] = String.valueOf(result.size());
-        data[LIP_TOTAL_RST] = String.valueOf(ExtractValue(mq_rst.getStatisticalData().getSummary())+ ExtractValue(eq_rst.getStatisticalData().getSummary()));
-        data[LIP_TOTAL_SYM] = String.valueOf(ExtractValue(mq_sym.getStatisticalData().getSummary())+ ExtractValue(eq_sym.getStatisticalData().getSummary()));
+        data[LIP_TOTAL_RST] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[LIP_TOTAL_SYM] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
         data[COMPONENTS] = String.valueOf(LIP.getSigmaFamily().size());
         // learning statistics
-        System.out.println("Rounds: " + LIP.getRound_counter().getCount());
-        System.out.println("#EQs: " + LIP.getEq_counter().getCount());
-        System.out.println(mq_rst.getStatisticalData());
-        System.out.println(mq_sym.getStatisticalData());
-        System.out.println(eq_rst.getStatisticalData());
-        System.out.println(eq_sym.getStatisticalData());
 
 
         // profiling
@@ -348,9 +418,10 @@ public class MealyBenchmarksRun {
 
         // use caching to avoid duplicate queries
 
-        // SULs for associating the IncrementalMealyBuilder 'mq_cbuilder' to MQs
-        mq_sul = SULCache.createDAGCache(alphabet, mq_rst);
-
+        // SULs for associating the IncrementalMealyBuilder 'mq_builder' to MQs
+        if (CACHE_ENABLE){
+            mq_sul = SULCache.createDAGCache(alphabet, mq_rst);
+        }
 
         MembershipOracle<String, Word<Word<String>>> mqOracle = new SULOracle<String, Word<String>>(mq_sul);
 
@@ -367,35 +438,35 @@ public class MealyBenchmarksRun {
         SUL<String, Word<String>> eq_sul = eq_rst;
 
         // SULs for associating the IncrementalMealyBuilder 'cbuilder' to EQs
-        eq_sul = SULCache.createDAGCache(alphabet, eq_rst);
+        if(CACHE_ENABLE){
+            eq_sul = SULCache.createDAGCache(alphabet, eq_rst);
+        }
 
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle = null;
-        eqOracle = buildEqOracle(eq_sul);
+        eqOracle = buildEqOracle(eq_sul, EQ_METHOD);
 
-        StatisticSUL<String, Word<String>> eq_new = new SymbolCounterSUL<>("Cache EQ", eq_sul);
 
         Experiment experiment = learningLStarM(alphabet, mealyss, mqOracle, eqOracle);
 
 
-//        // statistics array
-
-        data[LSTAR_MQ_RST] = String.valueOf(ExtractValue(mq_rst.getStatisticalData().getSummary()));
-        data[LSTAR_MQ_SYM] = String.valueOf(ExtractValue(mq_sym.getStatisticalData().getSummary()));
-        data[LSTAR_EQ_RST] = String.valueOf(ExtractValue(eq_rst.getStatisticalData().getSummary()));
-        data[LSTAR_EQ_SYM] = String.valueOf(ExtractValue(eq_sym.getStatisticalData().getSummary()));
-        data[LSTAR_EQs] = String.valueOf(experiment.getRounds());
-        data[LSTAR_STATES] = String.valueOf(((CompactMealy<?, ?>) experiment.getFinalHypothesis()).size());
-        data[LSTAR_TOTAL_RST] = String.valueOf(ExtractValue(mq_rst.getStatisticalData().getSummary())+ ExtractValue(eq_rst.getStatisticalData().getSummary()));
-        data[LSTAR_TOTAL_SYM] = String.valueOf(ExtractValue(mq_sym.getStatisticalData().getSummary())+ ExtractValue(eq_sym.getStatisticalData().getSummary()));
-
-
         // learning statistics
-        System.out.println("Rounds: " + experiment.getRounds().getCount());
-        System.out.println(mq_rst.getStatisticalData());
-        System.out.println(mq_sym.getStatisticalData());
-        System.out.println(eq_rst.getStatisticalData());
-        System.out.println(eq_sym.getStatisticalData());
-        System.out.println(eq_new.getStatisticalData());
+        logger.info("Rounds: " + experiment.getRounds().getCount());
+        logger.info(mq_rst.getStatisticalData().toString());
+        logger.info(mq_sym.getStatisticalData().toString());
+        logger.info(eq_rst.getStatisticalData().toString());
+        logger.info(eq_sym.getStatisticalData().toString());
+
+
+//        // statistics array
+        data[LSTAR_MQ_RST] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[LSTAR_MQ_SYM] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[LSTAR_EQ_RST] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[LSTAR_EQ_SYM] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
+        data[LSTAR_EQs] = String.valueOf(experiment.getRounds().getCount());
+        data[LSTAR_STATES] = String.valueOf(((CompactMealy<?, ?>) experiment.getFinalHypothesis()).size());
+        data[LSTAR_TOTAL_RST] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[LSTAR_TOTAL_SYM] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
+
 
 
         // profiling
@@ -406,19 +477,11 @@ public class MealyBenchmarksRun {
                                                                                       CompactMealy<String, Word<String>> mealyss,
                                                                                       MembershipOracle<String, Word<Word<String>>> mqOracle,
                                                                                       EquivalenceOracle<? super MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle){
-//        initPrefixes.add(Word.epsilon());
-//        List<Word<String>> initSuffixes = new ArrayList<>();
-//        Word<String> word = Word.epsilon();
-//        for (String symbol : mealyss.getInputAlphabet()) {
-//            initSuffixes.add(word.append(symbol));
-//        }
 
-        // construct standard L*M instance
         ExtensibleLStarMealyBuilder<String, Word<String>> builder = new ExtensibleLStarMealyBuilder<String, Word<String>>();
         builder.setAlphabet(alphabet);
         builder.setOracle(mqOracle);
-//        builder.setCexHandler(handler);
-//        builder.setClosingStrategy(strategy);
+
 
         ExtensibleLStarMealy<String, Word<String>> learner = builder.create();
 
@@ -432,11 +495,75 @@ public class MealyBenchmarksRun {
 
 
     private static EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> buildEqOracle(
-            SUL<String, Word<String>> eq_sul) {
+            SUL<String, Word<String>> eq_sul, String eq_method) {
         MembershipOracle<String, Word<Word<String>>> oracleForEQoracle = new SULOracle<>(eq_sul);
 
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle;
-        return new WpMethodEQOracle<>(oracleForEQoracle, 4);
+        double restartProbability;
+        int maxSteps, maxTests, maxLength, minLength, maxDepth, minimalSize, rndLength, bound;
+        long rnd_long;
+        boolean resetStepCount;
+        long tstamp = System.currentTimeMillis();
+        Random rnd_seed = new Random(tstamp);
+
+        LearnLibProperties learn_props = LearnLibProperties.getInstance();
+
+        switch (eq_method) {
+            case "rndWalk":
+                // create RandomWalkEQOracle
+                restartProbability = learn_props.getRndWalk_restartProbability();
+                maxSteps = learn_props.getRndWalk_maxSteps();
+                resetStepCount = learn_props.getRndWalk_resetStepsCount();
+
+                eqOracle = new RandomWalkEQOracle<String, Word<String>>(eq_sul, // sul
+                        restartProbability, // reset SUL w/ this probability before a step
+                        maxSteps, // max steps (overall)
+                        resetStepCount, // reset step count after counterexample
+                        rnd_seed // make results reproducible
+                );
+                logger.info("EquivalenceOracle: RandomWalkEQOracle(" + restartProbability + "," + maxSteps + ","
+                        + resetStepCount + ")");
+                break;
+            case "rndWords":
+                // create RandomWordsEQOracle
+                maxTests = learn_props.getRndWords_maxTests();
+                maxLength = learn_props.getRndWords_maxLength();
+                minLength = learn_props.getRndWords_minLength();
+                rnd_long = rnd_seed.nextLong();
+                rnd_seed.setSeed(rnd_long);
+
+                eqOracle = new RandomWordsEQOracle<>(oracleForEQoracle, minLength, maxLength, maxTests, rnd_seed);
+                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
+                        + ", " + rnd_long + ")");
+                break;
+            case "wp":
+                maxDepth = learn_props.getW_maxDepth();
+                eqOracle = new WpMethodEQOracle<>(oracleForEQoracle, maxDepth);
+                logger.info("EquivalenceOracle: WpMethodEQOracle(" + maxDepth + ")");
+                break;
+            case "w":
+                maxDepth = learn_props.getW_maxDepth();
+                eqOracle = new WMethodEQOracle<>(oracleForEQoracle, maxDepth);
+                logger.info("EquivalenceOracle: WMethodQsizeEQOracle(" + maxDepth + ")");
+                break;
+            case "wrnd":
+                minimalSize = learn_props.getWhyp_minLen();
+                rndLength = learn_props.getWhyp_rndLen();
+                bound = learn_props.getWhyp_bound();
+                rnd_long = rnd_seed.nextLong();
+                rnd_seed.setSeed(rnd_long);
+
+                eqOracle = new RandomWMethodEQOracle<>(oracleForEQoracle, minimalSize, rndLength, bound, rnd_seed, 1);
+                logger.info("EquivalenceOracle: RandomWMethodEQOracle(" + minimalSize + "," + rndLength + "," + bound
+                        + "," + rnd_long + ")");
+                break;
+            default:
+                maxDepth = 2;
+                eqOracle = new WMethodEQOracle<>(oracleForEQoracle, maxDepth);
+                logger.info("EquivalenceOracle: WMethodEQOracle(" + maxDepth + ")");
+                break;
+        }
+        return eqOracle;//        return new WpMethodEQOracle<>(oracleForEQoracle, 4);
     }
 
 
@@ -484,16 +611,16 @@ public class MealyBenchmarksRun {
         return Pair.of(tokens[0], token2);
     };
 
-    private static int ExtractValue(String string_1) {
-        // TODO Auto-generated method stub
-        int value_1 = 0;
-        int j = string_1.lastIndexOf(" ");
-        String string_2 = "";
-        if (j >= 0) {
-            string_2 = string_1.substring(j + 1);
-        }
-        value_1 = Integer.parseInt(string_2);
-        return value_1;
-    }
+//    private static String ExtractValue(String string_1) {
+//        // TODO Auto-generated method stub
+//        int value_1 = 0;
+//        int j = string_1.lastIndexOf(" ");
+//        String string_2 = "";
+//        if (j >= 0) {
+//            string_2 = string_1.substring(j + 1);
+//        }
+////        value_1 = Integer.parseInt(string_2);
+//        return string_2;
+//    }
 
 }
