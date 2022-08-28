@@ -66,7 +66,7 @@ public class MealyLearnInParts {
             ExtensibleLStarMealy<String, Word<String>> learner = builder.create();
             // The experiment will execute the main loop of active learning
             Experiment.MealyExperiment<String, Word<String>> experiment = new Experiment.MealyExperiment<String, Word<String>>(
-                    learner, eqOracle, sigmai);
+                    learner, partialEqOracle, sigmai);
             Long pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
             experiment.run();
 
@@ -91,8 +91,8 @@ public class MealyLearnInParts {
 
         Long pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
         Long post_eq_sym;
-        while ((ce = eqOracle.findCounterExample(hypothesis,
-                alphabet)) != null) {
+        ce = partialEqOracle.findCounterExample(hypothesis, alphabet);
+        while (ce != null){
             System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
             logger.info("round " + round_counter.getCount() + "  counterexample:  " + ce);
             System.out.println("round " + round_counter.getCount() + "  counterexample:  " + ce);
@@ -109,12 +109,18 @@ public class MealyLearnInParts {
 //            sigmaFamily = composition(sigmaFamily, dependentSets);
             ArrayList<String> mergedSet = new ArrayList<>();
             ArrayList<CompactMealy<String, Word<String>>> trashParts = new ArrayList<>();
+
             for (Alphabet<String> sigmai : dependentSets){
                 int i = sigmaFamily.indexOf(sigmai);
+                System.out.println("merging set " + sigmai);
+                System.out.println();
                 sigmaFamily.remove(sigmai);
                 trashParts.add(learnedParts.remove(i));
                 mergedSet.addAll(sigmai);
             }
+            System.out.println("merged sets :  " + mergedSet);
+            System.out.println();
+
             Alphabet<String> mergedAlphabet = Alphabets.fromList(mergedSet);
 
             // Learn the single merged component
@@ -151,6 +157,14 @@ public class MealyLearnInParts {
 //            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
             pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
 
+            if ((ce = partialEqOracle.findCounterExample(hypothesis, alphabet))==null){
+                System.out.println("eq oracle detects wrongly, round :   " + round_counter.getCount() );
+                ce = eqOracle.findCounterExample(hypothesis, alphabet);
+            }
+            else {
+                System.out.println("eq oracle detects correclty, round :   " + round_counter.getCount() );
+
+            }
         }
         CompactMealy final_H = productMealy.getMachine();
         logger.info("___ Decomposed Learning finished ___");
