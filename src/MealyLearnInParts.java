@@ -5,6 +5,8 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.api.statistic.StatisticSUL;
 import de.learnlib.filter.statistic.Counter;
+import de.learnlib.oracle.equivalence.WpMethodEQOracle;
+import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
@@ -26,7 +28,6 @@ public class MealyLearnInParts {
     private EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle ;
     private EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> partialEqOracle ;
     private MembershipOracle<String, Word<Word<String>>> mqOracle;
-    //    private ClassicLStarDFA<String> lstar;
     private List<Alphabet<String>> sigmaFamily;
     private Counter round_counter;
     private Counter eq_counter;
@@ -49,7 +50,10 @@ public class MealyLearnInParts {
         this.eq_counter = new Counter("Total number of equivalence queries", "#");
     }
 
-    public CompactMealy<String, Word<String>> run(StatisticSUL<String, Word<String>> eq_sym_counter){
+    public CompactMealy<String, Word<String>> run(StatisticSUL<String, Word<String>> eq_sym_counter,
+                                                  EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> testEqOracle){
+
+
         List<Alphabet<String>> initialSimaF = new ArrayList<>();
         for (String action : this.alphabet) {
             Alphabet<String> sigmai = new ListAlphabet<String>(Arrays.asList(action));
@@ -87,12 +91,13 @@ public class MealyLearnInParts {
 
         assert productMealy != null;
         CompactMealy<String, Word<String>> hypothesis = productMealy.getMachine();
-        @Nullable DefaultQuery<String, Word<Word<String>>> ce;;
+        @Nullable DefaultQuery<String, Word<Word<String>>> ce;
+        @Nullable DefaultQuery<String, Word<Word<String>>> ce2;
 
         Long pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
         Long post_eq_sym;
-        ce = partialEqOracle.findCounterExample(hypothesis, alphabet);
-        while (ce != null){
+        ce = eqOracle.findCounterExample(hypothesis,alphabet);
+        while (ce != null) {
             System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
             logger.info("round " + round_counter.getCount() + "  counterexample:  " + ce);
             System.out.println("round " + round_counter.getCount() + "  counterexample:  " + ce);
@@ -106,7 +111,6 @@ public class MealyLearnInParts {
 
             List<Alphabet<String>> dependentSets = dependent_sets(ce.getInput(), sigmaFamily, hypothesis);
 
-//            sigmaFamily = composition(sigmaFamily, dependentSets);
             ArrayList<String> mergedSet = new ArrayList<>();
             ArrayList<CompactMealy<String, Word<String>>> trashParts = new ArrayList<>();
 
@@ -147,31 +151,33 @@ public class MealyLearnInParts {
             productMealy = null;
             for (CompactMealy<String, Word<String>>component : Lists.reverse(learnedParts)){
 //                Visualization.visualize(component, component.getInputAlphabet());
-
                 if (productMealy== null){
                     productMealy = new ProductMealy(component);
                 }
                 else productMealy.mergeFSMs(component);
             }
             hypothesis = productMealy.getMachine();
+            ce = eqOracle.findCounterExample(hypothesis, alphabet);
+            if(ce == null && testEqOracle!= null){
+                ce2 = testEqOracle.findCounterExample(hypothesis,
+                        alphabet);
+                if(ce2!=null){
+                    System.out.println();
+                    System.out.println("********* Incomplete random learning **********");
+                    System.out.println();
+                    logger.info("********* Incomplete random learning **********");
+                    return null;
+                }
+            }
 //            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
             pre_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
-
-            if ((ce = partialEqOracle.findCounterExample(hypothesis, alphabet))==null){
-                System.out.println("eq oracle detects wrongly, round :   " + round_counter.getCount() );
-                ce = eqOracle.findCounterExample(hypothesis, alphabet);
-            }
-            else {
-                System.out.println("eq oracle detects correclty, round :   " + round_counter.getCount() );
-
-            }
         }
         CompactMealy final_H = productMealy.getMachine();
         logger.info("___ Decomposed Learning finished ___");
         logger.info(sigmaFamily.toString());
         String log_msg = "";
         for (Alphabet s: sigmaFamily){
-            log_msg += "  - component with " + s.size() + " inputs: " + s + " and " +  final_H.size() + " states" + "\br";
+            log_msg += "  - component with " + s.size() + " inputs: " + s + " and " +  final_H.size() + " states" + "\n";
         }
         logger.info(log_msg);
         return final_H;

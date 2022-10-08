@@ -184,7 +184,7 @@ public class MealyDirectBenchmarkRun {
 
 //TODO: change to two separate eq queries
         MealyLearnInParts LIP = new MealyLearnInParts(alphabet, mqOracle, eqOracle, eqOracle, logger);
-        CompactMealy result = LIP.run(eq_sym);
+        CompactMealy result = LIP.run(eq_sym, null);
 
 
         logger.info("Rounds: " + LIP.getRound_counter().getCount());

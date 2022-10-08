@@ -84,17 +84,17 @@ public class LearnLibProperties {
         }
         projection = Boolean.valueOf(props.getProperty(PROJECTION, "false"));
 
-        rndWalk_restartProbability 	= Double .valueOf(props.getProperty(RND_WALK+RESTART_PROBABILITY, "0.1"));
-        rndWalk_maxSteps 			= Integer.valueOf(props.getProperty(RND_WALK+MAX_STEPS, "70"));
+        rndWalk_restartProbability 	= Double .valueOf(props.getProperty(RND_WALK+RESTART_PROBABILITY, "0.03"));
+        rndWalk_maxSteps 			= Integer.valueOf(props.getProperty(RND_WALK+MAX_STEPS, "10000"));
         rndWalk_resetStepCount 		= Boolean.valueOf(props.getProperty(RND_WALK+RESET_STEPS_COUNT, "true"));
 
-        rndWords_minLength 			= Integer.valueOf(props.getProperty(RND_WORDS+MIN_LENGTH, "10"));
-        rndWords_maxLength 			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_LENGTH, "100"));
-        rndWords_maxTests  			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_TESTS, "100"));
+        rndWords_minLength 			= Integer.valueOf(props.getProperty(RND_WORDS+MIN_LENGTH, "100"));
+        rndWords_maxLength 			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_LENGTH, "200"));
+        rndWords_maxTests  			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_TESTS, "500"));
 
-        whyp_minLen 	= Integer.valueOf(props.getProperty(WEQ+MIN_LENGTH,"2"));
-        whyp_rndLen 	= Integer.valueOf(props.getProperty(WEQ+RND_LENGTH,"20"));
-        whyp_bound 	= Integer.valueOf(props.getProperty(WEQ+MAX_TESTS,"200000"));
+//        whyp_minLen 	= Integer.valueOf(props.getProperty(WEQ+MIN_LENGTH,"2"));
+//        whyp_rndLen 	= Integer.valueOf(props.getProperty(WEQ+RND_LENGTH,"20"));
+//        whyp_bound 	= Integer.valueOf(props.getProperty(WEQ+MAX_TESTS,"200000"));
 
 
         w_maxDepth 				= Integer.valueOf(props.getProperty(W+MAX_DEPTH,"2"));

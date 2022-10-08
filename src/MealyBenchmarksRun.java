@@ -8,6 +8,7 @@ import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.api.SUL;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
+import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.api.statistic.StatisticSUL;
 import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.filter.cache.sul.SULCache;
@@ -26,8 +27,6 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.serialization.InputModelDeserializer;
 import net.automatalib.serialization.dot.DOTParsers;
-import net.automatalib.serialization.dot.GraphDOT;
-import net.automatalib.visualization.Visualization;
 import net.automatalib.visualization.VisualizationHelper;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
@@ -50,213 +49,244 @@ import java.util.logging.SimpleFormatter;
 public class MealyBenchmarksRun {
 
     private static final String[] big_fsms = {
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_15.txt ",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_7.txt ",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_12.txt",
+       "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_7.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_18.txt",
+
     };
     private static final String[] benchmarks = {
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_2.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_10.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_12.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_13.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_6.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_12.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_9.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_10.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_12.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_13.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_16.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_15.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_3.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_10.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_12.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_13.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_18.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_11.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_10.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_13.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_6.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_13.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_18.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_9.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_5.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_13.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_22.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/3wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_11.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_34.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_28.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_10.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_11.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_35.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_23.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_32.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_33.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_2.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_25.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_27.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_1.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_25.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_21.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_26.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_36.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_39.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_5.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_13.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_18.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_10.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_12.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_13.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_18.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_4.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_14.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/4wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_29.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_26.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_35.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_15.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_28.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_33.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_11.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_6.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_2.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_20.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_13.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_30.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_40.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_12.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_17.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_26.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_37.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_23.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_27.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_29.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_8.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_26.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_8.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_19.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_40.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_3.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_14.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_13.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/9wise_6.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_12.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_13.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/6wise_9.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_21.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_10.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_17.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_20.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_1.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_2.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_3.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_36.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_16.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/7wise_24.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_5.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_38.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/8wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/8wise_7.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/5wise_4.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products2/6wise_24.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_5.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_6.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_7.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_8.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_9.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_10.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_11.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_12.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_13.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_14.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_15.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_16.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_17.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_18.txt",
+            "Benchmarks/BCS_SPL/Complete_FSM_files/products/7wise_2.txt",
             "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_19.txt",
-            "Benchmarks/BCS_SPL/Complete_FSM_files/products/9wise_20.txt",
-    };
+            };
 
 
-    public static int FILE_NAME = 0;
-    public static int STATES = 1;
-    public static int INPUTS = 2;
-    public static int LSTAR_MQ_SYM = 3;
-    public static int LSTAR_MQ_RST = 4;
-    public static int LSTAR_EQ_SYM = 5;
-    public static int LSTAR_EQ_RST = 6;
-    public static int LSTAR_TOTAL_SYM = 7;
-    public static int LSTAR_TOTAL_RST = 8;
-    public static int LSTAR_EQs = 9;
-    public static int LSTAR_STATES = 10;
-    public static int LIP_MQ_SYM = 11;
-    public static int LIP_MQ_RST = 12;
-    public static int LIP_EQ_SYM = 13;
-    public static int LIP_EQ_RST = 14;
-    public static int LIP_TOTAL_SYM = 15;
-    public static int LIP_TOTAL_RST = 16;
-    public static int LIP_EQs = 17;
-    public static int LIP_STATES = 18;
-    public static int COMPONENTS = 19 ;
-    public static int ROUNDS = 20;
-    public static int METHOD = 21;
-    public static int CACHE = 22;
-    public static int DATA_LEN = 23;
+
+    public static String FILE_NAME = "FILE_NAME";
+    public static String STATES = "STATES";
+    public static String INPUTS = "INPUTS";
+    public static String LSTAR = "LSTAR_";
+    public static String LIP = "LIP_";
+    public static String MQ_SYM = "_MQ_SYM";
+    public static String MQ_RST = "_MQ_RST";
+    public static String EQ_SYM = "_EQ_SYM";
+    public static String EQ_RST = "_EQ_RST";
+    public static String TOTAL_SYM = "_TOTAL_SYM";
+    public static String TOTAL_RST = "_TOTAL_RST";
+    public static String EQs = "_EQs";
+    public static String COMPONENTS = "_COMPONENTS" ;
+    public static String ROUNDS = "_ROUNDS";
+    public static String CACHE = "CACHE";
     public static String[] data;
 
 
     private static Boolean CACHE_ENABLE = true;
-    private static String EQ_METHOD = "wp";
-    private static final String RESULTS_PATH = "Results/Final_run/rnd_wp700_treak.csv";
+//    private static String EQ_METHOD = "wp";
+    private static final String rnd_RESULTS_PATH = "Results/Results_randoms.csv";
+    private static final String rnd_rnd_RESULTS_PATH = "Results/Results_rnd_rnd_wp.csv";
+    private static final String RESULTS_PATH = "Results/Results_randoms.csv";
+    private static final String Rejected_RESULTS_PATH = "Results/Results_rnd_rnd_rejected.csv";
     private static Logger logger;
+    private static CSVProperties csvProperties;
 
 
     public static void main(String[] args) throws IOException {
+        csvProperties = CSVProperties.getInstance();
+
+        // initial a file for fsm sizes
+        String fsm_size_path = "Benchmarks/FSM_sizes.csv";
+        Utils.writeDataLineByLine(fsm_size_path, new String[] {"file path", "size"});
+        String[] fsm_sizes_arr = new String[2];
+
+
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
         System.out.println(dtf.format(now));
@@ -274,11 +304,11 @@ public class MealyBenchmarksRun {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        for(String c : benchmarks){
-            data = new String[DATA_LEN];
+        int dataLen = csvProperties.getIndex("DATA_LEN");
+        for (String c : Arrays.copyOfRange(benchmarks  , 140, benchmarks.length )) {
+            data = new String[dataLen];
             File file = new File(c);
-            data[FILE_NAME] = c;
+            data[csvProperties.getIndex(FILE_NAME)] = c;
             CompactMealy<String, Word<String>> target;
             try {
                 target = Utils.getInstance().loadProductMealy(file, "BCS_SPL/Complete_FSM_files/").fsm;
@@ -289,41 +319,54 @@ public class MealyBenchmarksRun {
                 continue;
 //                throw new RuntimeException(e);
             }
-            if (target.size()>700){
-//                if (target.size()<1000)
-//                System.out.println("");
-//                System.out.println("------------------- BIG FSM FILE _____________________________ ");
-//                System.out.println(c);
-//                System.out.println();
-//                    Utils.writeFile("Benchmarks/mediumFSMs.txt", c  + "   " +  target.size() + "\n"  );
-//                    logger.info("BIG FSM:   " + c  + "   " +  target.size() + "\n"  );
-                continue;
-            }
+
+            fsm_sizes_arr[0] = c;
+            fsm_sizes_arr[1] = Integer.toString(target.size());
+            Utils.writeDataLineByLine(fsm_size_path, fsm_sizes_arr);
+
+
+//            if (target.size()<100) {
+//                continue;
+//            }
+//            if (target.size() > 1500 ) {
+//                return;
+//            }
             logger.info("FSM from : " + c);
             logger.info("#States: " + target.size());
-            data[STATES] = Integer.toString(target.size());
-            data[INPUTS] = Integer.toString(target.numInputs());
+            data[csvProperties.getIndex(STATES)] = Integer.toString(target.size());
+            data[csvProperties.getIndex(INPUTS)] = Integer.toString(target.numInputs());
             Alphabet<String> alphabet = target.getInputAlphabet();
 
-            String[] eq_methods = {"rndWalk" ,"rndWalk", "rndWalk", "rndWalk" };
-            for(String method:eq_methods){
-                logger.info("Partial EQ : " + method);
-                logger.info("EQ : " + EQ_METHOD);
+//            String[] eq_methods = {"rndWords" ,"rndWords", "rndWords", "rndWords" };
 
-                //          // Shuffle the alphabet
-                String[] alphArr =  alphabet.toArray(new String[alphabet.size()]);
-                Collections.shuffle(Arrays.asList(alphArr));
-                alphabet = Alphabets.fromArray(alphArr);
-                data[METHOD] = method;
-                data[CACHE] = CACHE_ENABLE.toString();
-                learnProductMealy(target, alphabet);
-                learnMealyInParts(target, alphabet, method );
-                Utils.writeDataLineByLine(RESULTS_PATH, data);
+            //   Shuffle the alphabet
+            String[] alphArr = alphabet.toArray(new String[alphabet.size()]);
+            Collections.shuffle(Arrays.asList(alphArr));
+            alphabet = Alphabets.fromArray(alphArr);
+            data[csvProperties.getIndex(CACHE)] = CACHE_ENABLE.toString();
+
+            // Run LSTAR
+//            learnProductMealy(target, alphabet, "wp", false);
+            learnProductMealy(target, alphabet, "rndWordsBig", true);
+
+            // RUN DECOMPOSED LEARNING
+            @Nullable CompactMealy result =null;
+            result = learnMealyInParts(target, alphabet, "rndWords", "rndWords", true);
+//            result = learnMealyInParts(target, alphabet, "wp", "rndWords", false);
+//            learnMealyInParts(target, alphabet, "wp", "rndWalk");
+//            learnMealyInParts(target, alphabet, "rndWalk",  "rndWalk");
+//            learnMealyInParts(target, alphabet, "wp",  "wp");
+            if (result == null){
+                Utils.writeDataLineByLine(Rejected_RESULTS_PATH, data);
+            }
+            else{
+                Utils.writeDataLineByLine(rnd_rnd_RESULTS_PATH, data);
+//                Utils.writeDataLineByLine(rnd_RESULTS_PATH, data);
             }
         }
     }
 
-    public static void learnMealyInParts(CompactMealy mealyss, Alphabet<String> alphabet, String partial_eq_method){
+    public static CompactMealy learnMealyInParts(CompactMealy mealyss, Alphabet<String> alphabet, String eq_method, String partial_eq_method, boolean test_mode){
 
         Utils.getInstance();
         // SUL simulator
@@ -359,7 +402,7 @@ public class MealyBenchmarksRun {
         // SUL for counting queries wraps sul
         SUL<String, Word<String>> eq_sul = eq_rst;
 
-        // SULs for associating the IncrementalMealyBuilder 'cbuilder' to EQs
+        // SULs for associating the IncrementalMealyBuilder 'builder' to EQs
         if (CACHE_ENABLE){
             eq_sul = SULCache.createDAGCache(alphabet, eq_rst);
         }
@@ -367,39 +410,51 @@ public class MealyBenchmarksRun {
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle = null;
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> partialEqOracle = null;
         partialEqOracle = buildEqOracle(eq_sul, partial_eq_method);
-        eqOracle = buildEqOracle(eq_sul, EQ_METHOD);
-
-
-        MealyLearnInParts LIP = new MealyLearnInParts(alphabet, mqOracle, eqOracle, partialEqOracle, logger);
-        CompactMealy result = LIP.run(eq_sym);
+        eqOracle = buildEqOracle(eq_sul, eq_method);
 
 
 
-        logger.info("Rounds: " + LIP.getRound_counter().getCount());
-        logger.info("#EQs: " + LIP.getEq_counter().getCount());
+        MealyLearnInParts Mealy_LIP = new MealyLearnInParts(alphabet, mqOracle, eqOracle, partialEqOracle, logger);
+        @Nullable CompactMealy result;
+        if (!test_mode ){
+            result = Mealy_LIP.run(eq_sym, null);
+        }
+        else{
+//        create check eq oracle for random search
+//            SUL<String, Word<String>> testSul = new MealySimulatorSUL<>(mealyss, Utils.OMEGA_SYMBOL);
+//            MembershipOracle<String, Word<Word<String>>> testOracleForEQoracle = new SULOracle<>(testSul);
+//            EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> testEqOracle =
+//                    new WpMethodEQOracle<>(testOracleForEQoracle, 2);
+            EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> testEqOracle =
+                    buildEqOracle(eq_sul, "wp");
+            result = Mealy_LIP.run(eq_sym, testEqOracle);
+        }
+
+        logger.info("Rounds: " + Mealy_LIP.getRound_counter().getCount());
+        logger.info("#EQs: " + Mealy_LIP.getEq_counter().getCount());
         logger.info(mq_rst.getStatisticalData().toString());
         logger.info(mq_sym.getStatisticalData().toString());
         logger.info(eq_rst.getStatisticalData().toString());
         logger.info(eq_sym.getStatisticalData().toString());
 //        // statistics array
-        data[ROUNDS] = String.valueOf(LIP.getRound_counter().getCount());
-        data[LIP_MQ_RST] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
-        data[LIP_MQ_SYM] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
-        data[LIP_EQ_RST] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
-        data[LIP_EQ_SYM] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
-        data[LIP_EQs] = String.valueOf(LIP.getEq_counter().getCount());
-        data[LIP_STATES] = String.valueOf(result.size());
-        data[LIP_TOTAL_RST] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
-        data[LIP_TOTAL_SYM] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
-        data[COMPONENTS] = String.valueOf(LIP.getSigmaFamily().size());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+ROUNDS)] = String.valueOf(Mealy_LIP.getRound_counter().getCount());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQs)] = String.valueOf(Mealy_LIP.getEq_counter().getCount());
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+COMPONENTS)] = String.valueOf(Mealy_LIP.getSigmaFamily().size());
         // learning statistics
 
 
         // profiling
         SimpleProfiler.logResults();
+        return result;
     }
 
-    public static void learnProductMealy(CompactMealy mealyss, Alphabet<String> alphabet){
+    public static void learnProductMealy(CompactMealy mealyss, Alphabet<String> alphabet, String eq_method, boolean test_mode){
 
         Utils.getInstance();
         // SUL simulator
@@ -443,10 +498,24 @@ public class MealyBenchmarksRun {
         }
 
         EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> eqOracle = null;
-        eqOracle = buildEqOracle(eq_sul, EQ_METHOD);
+        EquivalenceOracle<MealyMachine<?, String, ?, Word<String>>, String, Word<Word<String>>> testEqOracle = null;
+        eqOracle = buildEqOracle(eq_sul, eq_method);
+        testEqOracle = buildEqOracle(eq_sul, "wp");
 
 
         Experiment experiment = learningLStarM(alphabet, mealyss, mqOracle, eqOracle);
+        CompactMealy<String, Word<String>> h = (CompactMealy<String, Word<String>>) experiment.getFinalHypothesis();
+        if (test_mode){
+            @Nullable DefaultQuery<String, Word<Word<String>>> ce = testEqOracle.findCounterExample(h,alphabet);
+            if (ce!=null){
+                System.out.println();
+                System.out.println("************  incomplete lstar learning  **********");
+                System.out.println(data[csvProperties.getIndex(FILE_NAME)]);
+                System.out.println();
+            }
+
+        }
+
 
 
         // learning statistics
@@ -458,14 +527,13 @@ public class MealyBenchmarksRun {
 
 
 //        // statistics array
-        data[LSTAR_MQ_RST] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
-        data[LSTAR_MQ_SYM] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
-        data[LSTAR_EQ_RST] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
-        data[LSTAR_EQ_SYM] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
-        data[LSTAR_EQs] = String.valueOf(experiment.getRounds().getCount());
-        data[LSTAR_STATES] = String.valueOf(((CompactMealy<?, ?>) experiment.getFinalHypothesis()).size());
-        data[LSTAR_TOTAL_RST] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
-        data[LSTAR_TOTAL_SYM] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LSTAR+eq_method+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+eq_method+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+eq_method+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+eq_method+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+eq_method+EQs)] = String.valueOf(experiment.getRounds().getCount());
+        data[csvProperties.getIndex(LSTAR+eq_method+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LSTAR+eq_method+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
 
 
 
@@ -528,6 +596,21 @@ public class MealyBenchmarksRun {
                 // create RandomWordsEQOracle
                 maxTests = learn_props.getRndWords_maxTests();
                 maxLength = learn_props.getRndWords_maxLength();
+                minLength = learn_props.getRndWords_minLength();
+                rnd_long = rnd_seed.nextLong();
+                rnd_seed.setSeed(rnd_long);
+                System.out.println("max test");
+                System.out.println(maxTests);
+
+                eqOracle = new RandomWordsEQOracle<>(oracleForEQoracle, minLength, maxLength, maxTests, rnd_seed);
+                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
+                        + ", " + rnd_long + ")");
+                break;
+
+            case "rndWordsBig":
+                // create RandomWordsEQOracle
+                maxTests = 2000;
+                maxLength = 200;
                 minLength = learn_props.getRndWords_minLength();
                 rnd_long = rnd_seed.nextLong();
                 rnd_seed.setSeed(rnd_long);
