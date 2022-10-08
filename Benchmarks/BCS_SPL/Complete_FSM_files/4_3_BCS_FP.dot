@@ -1,4 +1,4 @@
-digraph g {
+ digraph g {
 
 	s0 [shape="circle" label="0"];
 	s1 [shape="circle" label="1"];
