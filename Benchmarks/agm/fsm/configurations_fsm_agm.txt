@@ -1,7 +1,0 @@
-ProductName FeaturesSelected(totValid:6 | max:2000)
-fsm_agm_1	AGM A M L C R V Y P B 
-fsm_agm_2	AGM A M L C R V Y P N 
-fsm_agm_3	AGM A M L C R V Y P W 
-fsm_agm_4	AGM A M L C R V Y P W S 
-fsm_agm_5	AGM A M L C R V Y P B S 
-fsm_agm_6	AGM A M L C R V Y P N S 
