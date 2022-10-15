@@ -55,7 +55,7 @@ public class Utils {
     private static final String WORD_DELIMITER = ";";
     private static final String SYMBOL_DELIMITER = ",";
 
-    private static String BenchmarksDir = "Benchmarks/";
+    private static String BenchmarksDir = "Experiments/Benchmarks/";
     public static Utils getInstance() {
         if(instance == null){
             Utils.instance = new Utils();

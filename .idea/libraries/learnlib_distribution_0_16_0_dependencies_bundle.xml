@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="learnlib-distribution-0.16.0-dependencies-bundle">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../learnlib-distribution-0.16.0-dependencies-bundle.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

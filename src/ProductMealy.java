@@ -17,7 +17,7 @@ public class ProductMealy{
         this.fsm = m1;
     }
     public static void main(String[] args) throws IOException {
-        String c = "Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt";
+        String c = "Experiments/Benchmarks/BCS_SPL/Complete_FSM_files/products/2wise_1.txt";
         File file = new File(c);
         CompactMealy<String, Word<String>> target;
         try {

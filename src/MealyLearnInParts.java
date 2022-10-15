@@ -159,14 +159,16 @@ public class MealyLearnInParts {
             hypothesis = productMealy.getMachine();
             ce = eqOracle.findCounterExample(hypothesis, alphabet);
             if(ce == null && testEqOracle!= null){
-                ce2 = testEqOracle.findCounterExample(hypothesis,
-                        alphabet);
-                if(ce2!=null){
-                    System.out.println();
-                    System.out.println("********* Incomplete random learning **********");
-                    System.out.println();
-                    logger.info("********* Incomplete random learning **********");
-                    return null;
+                for (CompactMealy<String, Word<String>> comp: learnedParts){
+                    ce2 = testEqOracle.findCounterExample(comp, comp.getInputAlphabet());
+//                ce2 = testEqOracle.findCounterExample(hypothesis,alphabet);
+                    if(ce2 != null){
+                        System.out.println();
+                        System.out.println("********* Incomplete random learning **********");
+                        System.out.println();
+                        logger.info("********* Incomplete random learning **********");
+                        return null;
+                    }
                 }
             }
 //            Visualization.visualize(productDFA.getDfa(), productDFA.getDfa().getInputAlphabet());
