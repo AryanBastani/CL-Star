@@ -1,7 +1,7 @@
 import itertools
 import random
 list_of_names = []
-with open('./products/file_names.txt') as f:
+with open('products/file_names.txt') as f:
     for line in f:
         if line != "":
             list_of_names.append(line)
