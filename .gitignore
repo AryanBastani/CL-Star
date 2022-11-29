@@ -2,5 +2,10 @@
 /out/
 /bin/
 /logs/
+/Results/clean_results/
+/Results/Final_run/
+
 *.smt2
 .Rhistory
+.idea/
+
