@@ -14,7 +14,7 @@ The parameters of the experiment can be modified in [`.experimentProps`](/.exper
 - __result_path__: address of the file that results will be written in it.
 - __final_check_mode__: a boolean indicating that whether run the experiments with an extra deterministic equivalence query or not.
 
-##Experiment Results
+## Experiment Results
 All the experiment results containing the csv file output of results, the summarised results (statistical analysis) and plots are in [`\Results`](Results) directory. 
 the statistical analysis and visualizations are performed in python (the source code is in [Decomposed_Learning_Results.ipynb](/Experiments/Decomposed_Learning_Results.ipynb) file).
 
