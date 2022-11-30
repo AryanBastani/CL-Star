@@ -562,7 +562,7 @@ public class Utils {
     public ProductMealy loadProductMealy(File f, String dir) throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(f));
         ProductMealy productMealy = null;
-        int comp_num = 1;
+        int comp_num = 0;
 //        Pattern kissLine = Pattern.compile("\\s*(\\S+)\\s+--\\s+(\\S+)\\s+->\\s+(\\S+)\\s*.txt");
         while (br.ready()) {
             String line = br.readLine();
@@ -581,6 +581,7 @@ public class Utils {
             else productMealy.mergeFSMs(component);
             comp_num++;
         }
+        productMealy.setComponents_count(comp_num);
         return productMealy;
     }
 

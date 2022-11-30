@@ -13,6 +13,7 @@ import java.util.*;
 public class ProductMealy{
 
     CompactMealy<String, Word<String>> fsm;
+    int components_count;
     public ProductMealy( CompactMealy<String, Word<String>> m1) {
         this.fsm = m1;
     }
@@ -197,4 +198,12 @@ public class ProductMealy{
     public void setMachine (CompactMealy <String, Word<String>> machine){
         this.fsm = machine;
     }
+
+    public int getComponents_count() {
+        return components_count;
     }
+
+    public void setComponents_count(int components_count) {
+        this.components_count = components_count;
+    }
+}
