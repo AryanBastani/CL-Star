@@ -42,7 +42,7 @@ Getting Started
     To use jupyter notebook, you need to have python and jupyter installed on your computer.
     See this instruction(https://jupyter.org/install) to install them.
 
-    The mentioned notebook contains above items:
+    The mentioned notebook contains below items:
         - statistical analysis of data (checking for normal data and t-test)
         - summarizing the output data (tables 1 and 2 in the paper)
         - plotting to illustrate the results (figures 2-4 in the paper)
