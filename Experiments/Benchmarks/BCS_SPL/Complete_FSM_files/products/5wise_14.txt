@@ -1,5 +1,0 @@
-4_2_BCS_APW.dot
-4_7_BCS_EM.dot
-4_13_MCS_LED_EML.dot
-4_14_BCS_LED_EMB.dot
-4_19_BCS_LED_AS_Alarm_D.dot

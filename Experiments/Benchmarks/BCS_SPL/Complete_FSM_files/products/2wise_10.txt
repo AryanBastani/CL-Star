@@ -1,2 +1,0 @@
-4_10_BCS_LED_MPW.dot
-4_21_BCS_AS.dot

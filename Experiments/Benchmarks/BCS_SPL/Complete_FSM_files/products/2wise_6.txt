@@ -1,2 +1,0 @@
-4_5_BCS_LED_FP.dot
-4_10_BCS_LED_MPW.dot

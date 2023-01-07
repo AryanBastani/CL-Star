@@ -1,2 +1,0 @@
-4_18_BCS_LED_AS_Alarm.dot
-BCS_PW_4.dot

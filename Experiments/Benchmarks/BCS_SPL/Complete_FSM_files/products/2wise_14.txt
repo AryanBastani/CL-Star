@@ -1,2 +1,0 @@
-4_19_BCS_LED_AS_Alarm_D.dot
-4_20_MCS_LED_AS_IMA.dot

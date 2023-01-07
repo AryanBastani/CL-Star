@@ -1,6 +1,0 @@
-4_1_BCS_MPW.dot 6
-4_9_BCS_LED_CLS.dot
-4_16_BCS_LED_EMH.dot
-4_18_BCS_LED_AS_Alarm.dot
-4_20_MCS_LED_AS_IMA.dot
-BCS_PW_4.dot

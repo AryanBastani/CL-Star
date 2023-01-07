@@ -1,6 +1,0 @@
-4_5_BCS_LED_FP.dot
-4_7_BCS_EM.dot
-4_10_BCS_LED_MPW.dot
-4_13_MCS_LED_EML.dot
-4_17_BCS_LED_AS_Active.dot
-4_20_MCS_LED_AS_IMA.dot
