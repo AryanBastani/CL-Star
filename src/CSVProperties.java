@@ -16,7 +16,7 @@ public class CSVProperties {
     }
 
     public void loadProperties(){
-        File f = new File(".csvProps");
+        File f = new File("resources/.csvProps");
         loadProperties(f);
     }
     public void loadProperties(File f) {
@@ -46,23 +46,11 @@ public class CSVProperties {
     public String[] getResults_header(){
         String [] hearder = new String[]{
                 "FILE_NAME", "STATES", "INPUTS",
-                "LSTAR_rndWords_MQ_SYM", "LSTAR_rndWords_MQ_RST", "LSTAR_rndWords_EQ_SYM", "LSTAR_rndWords_EQ_RST", "LSTAR_rndWords_TOTAL_SYM",
-                "LSTAR_rndWords_TOTAL_RST", "LSTAR_rndWords_EQs",
-                "LSTAR_rndWalk_MQ_SYM", "LSTAR_rndWalk_MQ_RST", "LSTAR_rndWalk_EQ_SYM", "LSTAR_rndWalk_EQ_RST",
-                "LSTAR_rndWalk_TOTAL_SYM", "LSTAR_rndWalk_TOTAL_RST", "LSTAR_rndWalk_EQs",
-                "LSTAR_wp_MQ_SYM", "LSTAR_wp_MQ_RST", "LSTAR_wp_EQ_SYM", "LSTAR_wp_EQ_RST",
-                "LSTAR_wp_TOTAL_SYM", "LSTAR_wp_TOTAL_RST", "LSTAR_wp_EQs",
-                "LIP_wp_rndWalk_MQ_SYM", "LIP_wp_rndWalk_MQ_RST", "LIP_wp_rndWalk_EQ_SYM", "LIP_wp_rndWalk_EQ_RST",
-                "LIP_wp_rndWalk_TOTAL_SYM", "LIP_wp_rndWalk_TOTAL_RST", "LIP_wp_rndWalk_EQs", "LIP_wp_rndWalk_COMPONENTS",
-                "LIP_wp_rndWalk_ROUNDS", "LIP_wp_rndWords_MQ_SYM", "LIP_wp_rndWords_MQ_RST", "LIP_wp_rndWords_EQ_SYM", "LIP_wp_rndWords_EQ_RST",
-                "LIP_wp_rndWords_TOTAL_SYM", "LIP_wp_rndWords_TOTAL_RST", "LIP_wp_rndWords_EQs", "LIP_wp_rndWords_COMPONENTS",
-                "LIP_wp_rndWords_ROUNDS", "LIP_rndWalk_rndWalk_MQ_SYM", "LIP_rndWalk_rndWalk_MQ_RST", "LIP_rndWalk_rndWalk_EQ_SYM",
-                "LIP_rndWalk_rndWalk_EQ_RST", "LIP_rndWalk_rndWalk_TOTAL_SYM", "LIP_rndWalk_rndWalk_TOTAL_RST", "LIP_rndWalk_rndWalk_EQs",
-                "LIP_rndWalk_rndWalk_COMPONENTS", "LIP_rndWalk_rndWalk_ROUNDS", "LIP_rndWords_rndWords_MQ_SYM", "LIP_rndWords_rndWords_MQ_RST",
-                "LIP_rndWords_rndWords_EQ_SYM", "LIP_rndWords_rndWords_EQ_RST", "LIP_rndWords_rndWords_TOTAL_SYM", "LIP_rndWords_rndWords_TOTAL_RST",
-                "LIP_rndWords_rndWords_EQs", "LIP_rndWords_rndWords_COMPONENTS", "LIP_rndWords_rndWords_ROUNDS", "LIP_wp_wp_MQ_SYM", "LIP_wp_wp_MQ_RST",
-                "LIP_wp_wp_EQ_SYM", "LIP_wp_wp_EQ_RST", "LIP_wp_wp_TOTAL_SYM", "LIP_wp_wp_TOTAL_RST", "LIP_wp_wp_EQs", "LIP_wp_wp_COMPONENTS",
-                "LIP_wp_wp_ROUNDS", "CACHE"};
+                "LSTAR_MQ_SYM", "LSTAR_MQ_RST", "LSTAR_EQ_SYM", "LSTAR_EQ_RST", "LSTAR_TOTAL_SYM",
+                "LSTAR_TOTAL_RST", "LSTAR_EQs",
+                "CLSTAR_MQ_SYM", "CLSTAR_MQ_RST", "CLSTAR_EQ_SYM", "CLSTAR_EQ_RST",
+                "CLSTAR_TOTAL_SYM", "CLSTAR_TOTAL_RST", "CLSTAR_EQs", "CLSTAR_COMPONENTS",
+                "CLSTAR_ROUNDS", "CACHE"};
         return hearder;
     }
 }

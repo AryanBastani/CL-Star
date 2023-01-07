@@ -15,7 +15,7 @@ public class Experimentproperties {
     }
 
     public void loadProperties(){
-        File f = new File(".experimentProps");
+        File f = new File("resources/.experimentProps");
         loadProperties(f);
     }
     public void loadProperties(File f) {

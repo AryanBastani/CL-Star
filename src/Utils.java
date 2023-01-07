@@ -55,7 +55,7 @@ public class Utils {
     private static final String WORD_DELIMITER = ";";
     private static final String SYMBOL_DELIMITER = ",";
 
-    private static String BenchmarksDir = "Experiments/Benchmarks/";
+    private static String BenchmarksDir = "resources/Benchmarks/";
     public static Utils getInstance() {
         if(instance == null){
             Utils.instance = new Utils();
@@ -405,10 +405,7 @@ public class Utils {
                     trs.add(tr);
                     abcSet.add(tr[1]);
                 }
-
-
             }
-            //			count++;
         }
 
         br.close();
@@ -585,6 +582,25 @@ public class Utils {
         return productMealy;
     }
 
+    public static void saveMealyMachineAsDot(CompactMealy<String, Word<String>> mealy, File f) throws Exception {
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+        List<Integer> states = new ArrayList<>();
+        states.addAll(mealy.getStates()); states.removeAll(mealy.getInitialStates());
+        states.addAll(0, mealy.getInitialStates());
+        for (Integer si : states) {
+            for (String in : mealy.getInputAlphabet()) {
+                CompactMealyTransition<Word<String>> tr = mealy.getTransition(si,in);
+                Word<String> out = tr.getOutput();
+                int sj = tr.getSuccId();
+//                bw.append(String.format("%d -- %s / %s -> %d\n", si,in,out,sj));
+                bw.append(String.format("s%d -> s%d [label=\"%s  /  %s\"];\n", si,sj,in,out));
+            }
+        }
+        bw.close();
+    }
+
+
     public static String ExtractValue(String string_1) {
         // TODO Auto-generated method stub
         int value_1 = 0;
@@ -610,6 +626,26 @@ public class Utils {
         try {
             // create FileWriter object with file as parameter
             FileWriter outputfile = new FileWriter(file, true);
+
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter writer = new CSVWriter(outputfile);
+
+            writer.writeNext(data);
+            writer.close();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            throw (e);
+        }
+    }
+
+    public static void writeDataHeader(String filePath, String[] data) throws IOException {
+        // first create file object for file placed at location
+        // specified by filepath
+        File file = new File(filePath);
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outputfile = new FileWriter(file, false);
 
             // create CSVWriter object filewriter object as parameter
             CSVWriter writer = new CSVWriter(outputfile);

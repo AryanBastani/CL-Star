@@ -62,7 +62,7 @@ public class LearnLibProperties {
 
 
     public void loadProperties(){
-        File f = new File(".learnlib");
+        File f = new File("resources/.learnlib");
         loadProperties(f);
     }
     public void loadProperties(File f){

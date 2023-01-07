@@ -79,8 +79,8 @@ public class MealyLearnInParts {
 
             eq_counter.increment(experiment.getRounds().getCount());
             Long post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
-            logger.info("Learned partialH with " + partialH.size() + " states,   " +
-                    (post_eq_sym - pre_eq_sym) + " symbols in " + experiment.getRounds().getCount() + " rounds" );
+//            logger.info("Learned partialH with " + partialH.size() + " states,   " +
+//                    (post_eq_sym - pre_eq_sym) + " symbols in " + experiment.getRounds().getCount() + " rounds" );
 
             learnedParts.add(partialH);
             if (productMealy== null){
@@ -98,16 +98,16 @@ public class MealyLearnInParts {
         Long post_eq_sym;
         ce = eqOracle.findCounterExample(hypothesis,alphabet);
         while (ce != null) {
-            System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
-            logger.info("round " + round_counter.getCount() + "  counterexample:  " + ce);
-            System.out.println("round " + round_counter.getCount() + "  counterexample:  " + ce);
-            System.out.println();
-            System.out.println();
+//            System.out.println("******************$$$$$$$$$$$$$$$$$$************$$$$$$$$$$$$************");
+//            logger.info("round " + round_counter.getCount() + "  counterexample:  " + ce);
+//            System.out.println("round " + round_counter.getCount() + "  counterexample:  " + ce);
+//            System.out.println();
+//            System.out.println();
             round_counter.increment();
             eq_counter.increment();
             post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
-            logger.info("Search for ce,  " + hypothesis.size() + " states,   " +
-                    (post_eq_sym - pre_eq_sym) + " symbols" );
+//            logger.info("Search for ce,  " + hypothesis.size() + " states,   " +
+//                    (post_eq_sym - pre_eq_sym) + " symbols" );
 
             List<Alphabet<String>> dependentSets = dependent_sets(ce.getInput(), sigmaFamily, hypothesis);
 
@@ -116,14 +116,14 @@ public class MealyLearnInParts {
 
             for (Alphabet<String> sigmai : dependentSets){
                 int i = sigmaFamily.indexOf(sigmai);
-                System.out.println("merging set " + sigmai);
-                System.out.println();
+//                System.out.println("merging set " + sigmai);
+//                System.out.println();
                 sigmaFamily.remove(sigmai);
                 trashParts.add(learnedParts.remove(i));
                 mergedSet.addAll(sigmai);
             }
-            System.out.println("merged sets :  " + mergedSet);
-            System.out.println();
+//            System.out.println("merged sets :  " + mergedSet);
+//            System.out.println();
 
             Alphabet<String> mergedAlphabet = Alphabets.fromList(mergedSet);
 
@@ -141,8 +141,8 @@ public class MealyLearnInParts {
             CompactMealy<String, Word<String>> partialH = (CompactMealy<String, Word<String>>) experiment.getFinalHypothesis();
             eq_counter.increment(experiment.getRounds().getCount());
             post_eq_sym = Long.parseLong(Utils.ExtractValue(eq_sym_counter.getStatisticalData().getSummary()));
-            logger.info("Learned partialH with " + partialH.size() + "states,   " +
-                    (post_eq_sym - pre_eq_sym) + "  symbols in " + experiment.getRounds().getCount() + " rounds" );
+//            logger.info("Learned partialH with " + partialH.size() + "states,   " +
+//                    (post_eq_sym - pre_eq_sym) + "  symbols in " + experiment.getRounds().getCount() + " rounds" );
 
 
             sigmaFamily.add(mergedAlphabet);
@@ -163,10 +163,10 @@ public class MealyLearnInParts {
                     ce2 = testEqOracle.findCounterExample(comp, comp.getInputAlphabet());
 //                ce2 = testEqOracle.findCounterExample(hypothesis,alphabet);
                     if(ce2 != null){
-                        System.out.println();
-                        System.out.println("********* Incomplete random learning **********");
-                        System.out.println();
-                        logger.info("********* Incomplete random learning **********");
+//                        System.out.println();
+//                        System.out.println("********* Incomplete random learning **********");
+//                        System.out.println();
+//                        logger.info("********* Incomplete random learning **********");
                         return null;
                     }
                 }
@@ -176,12 +176,12 @@ public class MealyLearnInParts {
         }
         CompactMealy final_H = productMealy.getMachine();
         logger.info("___ Decomposed Learning finished ___");
-        logger.info(sigmaFamily.toString());
+//        logger.info(sigmaFamily.toString());
         String log_msg = "";
         for (Alphabet s: sigmaFamily){
             log_msg += "  - component with " + s.size() + " inputs: " + s + " and " +  final_H.size() + " states" + "\n";
         }
-        logger.info(log_msg);
+//        logger.info(log_msg);
         return final_H;
     }
 

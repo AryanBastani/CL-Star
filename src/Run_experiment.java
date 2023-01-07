@@ -22,22 +22,23 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.serialization.InputModelDeserializer;
 import net.automatalib.serialization.dot.DOTParsers;
+import net.automatalib.serialization.dot.GraphDOT;
+import net.automatalib.visualization.Visualization;
 import net.automatalib.visualization.VisualizationHelper;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -47,8 +48,8 @@ public class Run_experiment {
     public static String FILE_NAME = "FILE_NAME";
     public static String STATES = "STATES";
     public static String INPUTS = "INPUTS";
-    public static String LSTAR = "LSTAR_";
-    public static String LIP = "LIP_";
+    public static String LSTAR = "LSTAR";
+    public static String LIP = "LIP";
     public static String MQ_SYM = "_MQ_SYM";
     public static String MQ_RST = "_MQ_RST";
     public static String EQ_SYM = "_EQ_SYM";
@@ -70,56 +71,89 @@ public class Run_experiment {
     private static Experimentproperties experimentProperties ;
     private static String benchmarks_base_dir;
 
+    public static final String SRC_DIR = "src_dir";
+    public static final String EQUIVALENCE_METHOD = "eq";
+    public static final String EXPERIMENT_REPEAT = "repeat";
+
 
     public static void main(String[] args) throws IOException {
         csvProperties = CSVProperties.getInstance();
         experimentProperties = Experimentproperties.getInstance();
+        try {
+            // create the command line parser
+            CommandLineParser parser = new DefaultParser();
 
+            // create the Options
+            Options options = createOptions();
+
+            // automatically generate the help statement
+            HelpFormatter formatter = new HelpFormatter();
+
+            // parse the command line arguments
+            CommandLine line = parser.parse(options, args);
+
+            String file_path;
+            if (line.hasOption(SRC_DIR)) {
+                file_path = line.getOptionValue(SRC_DIR);
+            }else{
+                file_path = experimentProperties.getProp("benchmarks_file");
+            }
+            String equivalence_method;
+            if (line.hasOption(EQUIVALENCE_METHOD) ) {
+                equivalence_method = line.getOptionValue(EQUIVALENCE_METHOD);
+            }else {
+                equivalence_method = experimentProperties.getProp("eq_query");
+            }
+            int repeat;
+            if (line.hasOption(SRC_DIR)) {
+                repeat = Integer.parseInt(line.getOptionValue(SRC_DIR));
+            }else{
+                repeat = Integer.parseInt(experimentProperties.getProp(EXPERIMENT_REPEAT));
+            }
 
 //        initial the experiment properties
         benchmarks_base_dir = experimentProperties.getProp("benchmarks_base_dir");
         RESULTS_PATH = experimentProperties.getProp("result_path");
-        String file_path = experimentProperties.getProp("benchmarks_file");
 
         File f = new File(file_path);
         BufferedReader br = new BufferedReader(new FileReader(f));
 
         // initial a results file
-        Utils.writeDataLineByLine(RESULTS_PATH, csvProperties.getResults_header());
+        Utils.writeDataHeader(RESULTS_PATH, csvProperties.getResults_header());
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
         logger = Logger.getLogger(dtf.format(now).toString());
-        FileHandler fh;
-        try {
-            String path = "logs/" + dtf.format(now) + ".log";
-            fh = new FileHandler(path);
-            logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        FileHandler fh;
+//        try {
+//            String path = "logs/" + dtf.format(now) + ".log";
+//            fh = new FileHandler(path);
+//            logger.addHandler(fh);
+//            SimpleFormatter formatter1 = new SimpleFormatter();
+//            fh.setFormatter(formatter1);
+//
+//        } catch (SecurityException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         int dataLen = csvProperties.getIndex("DATA_LEN");
         while (br.ready()) {
-            String c = benchmarks_base_dir + br.readLine();
+            String c = br.readLine();
             data = new String[dataLen];
             File file = new File(c);
             data[csvProperties.getIndex(FILE_NAME)] = c;
             CompactMealy<String, Word<String>> target;
             try {
-                target = Utils.getInstance().loadProductMealy(file, "BCS_SPL/Complete_FSM_files/").fsm;
-//                Visualization.visualize(target, target.getInputAlphabet());
+                target = Utils.getInstance().loadMealyMachineFromDot(file);
             } catch (Exception e) {
                 logger.warning("problem in loading file");
+                logger.warning(e.toString());
                 logger.warning(c);
                 continue;
-//                throw new RuntimeException(e);
             }
+
 
             logger.info("FSM from : " + c);
             logger.info("#States: " + target.size());
@@ -127,31 +161,31 @@ public class Run_experiment {
             data[csvProperties.getIndex(INPUTS)] = Integer.toString(target.numInputs());
             Alphabet<String> alphabet = target.getInputAlphabet();
 
-            //   Shuffle the alphabet
-            String[] alphArr = alphabet.toArray(new String[alphabet.size()]);
-            Collections.shuffle(Arrays.asList(alphArr));
-            alphabet = Alphabets.fromArray(alphArr);
-            data[csvProperties.getIndex(CACHE)] = CACHE_ENABLE.toString();
+            for(int rep=0;rep<repeat; rep++) {
+                //   Shuffle the alphabet
+                String[] alphArr = alphabet.toArray(new String[alphabet.size()]);
+                Collections.shuffle(Arrays.asList(alphArr));
+                alphabet = Alphabets.fromArray(alphArr);
+                data[csvProperties.getIndex(CACHE)] = CACHE_ENABLE.toString();
 
-            // Run LSTAR
-            Boolean final_check_mode = Boolean.valueOf(experimentProperties.getProp("final_check_mode"));
-//            learnProductMealy(target, alphabet, "wp", final_check_mode);
-            learnProductMealy(target, alphabet, "rndWordsBig", final_check_mode);
-            logger.info("____lstar finished____");
+                //             Run LSTAR
+                Boolean final_check_mode = Boolean.valueOf(experimentProperties.getProp("final_check_mode"));
+                learnProductMealy(target, alphabet, equivalence_method, final_check_mode);
 
-            // RUN DECOMPOSED LEARNING
-            @Nullable CompactMealy result =null;
-            result = learnMealyInParts(target, alphabet, "rndWords", "rndWords", final_check_mode);
-//            result = learnMealyInParts(target, alphabet, "wp", "rndWords",final_check_mode );
-//            result = learnMealyInParts(target, alphabet, "wp", "rndWalk", final_check_mode);
-//            result = learnMealyInParts(target, alphabet, "rndWalk",  "rndWalk", final_check_mode);
-//            result = learnMealyInParts(target, alphabet, "wp",  "wp", final_check_mode);
-            if (result == null){
-                logger.warning("the  SUL is not learned completely");
+                //             RUN DECOMPOSED LEARNING
+                @Nullable CompactMealy result = null;
+                result = learnMealyInParts(target, alphabet, equivalence_method, "rndWords", final_check_mode);
+
+                if (result == null) {
+                    logger.warning("the  SUL is not learned completely");
+                } else {
+                    Utils.writeDataLineByLine(RESULTS_PATH, data);
+                }
             }
-            else{
-                Utils.writeDataLineByLine(RESULTS_PATH, data);
-            }
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getStackTrace()[0].getLineNumber());
         }
     }
 
@@ -226,15 +260,15 @@ public class Run_experiment {
         logger.info(eq_rst.getStatisticalData().toString());
         logger.info(eq_sym.getStatisticalData().toString());
 //        // statistics array
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+ROUNDS)] = String.valueOf(Mealy_LIP.getRound_counter().getCount());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+EQs)] = String.valueOf(Mealy_LIP.getEq_counter().getCount());
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
-        data[csvProperties.getIndex(LIP+eq_method+"_"+partial_eq_method+COMPONENTS)] = String.valueOf(Mealy_LIP.getSigmaFamily().size());
+        data[csvProperties.getIndex(LIP+ROUNDS)] = String.valueOf(Mealy_LIP.getRound_counter().getCount());
+        data[csvProperties.getIndex(LIP+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LIP+EQs)] = String.valueOf(Mealy_LIP.getEq_counter().getCount());
+        data[csvProperties.getIndex(LIP+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LIP+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LIP+COMPONENTS)] = String.valueOf(Mealy_LIP.getSigmaFamily().size());
         // learning statistics
 
 
@@ -315,13 +349,13 @@ public class Run_experiment {
 
 
 //        // statistics array
-        data[csvProperties.getIndex(LSTAR+eq_method+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LSTAR+eq_method+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LSTAR+eq_method+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LSTAR+eq_method+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
-        data[csvProperties.getIndex(LSTAR+eq_method+EQs)] = String.valueOf(experiment.getRounds().getCount());
-        data[csvProperties.getIndex(LSTAR+eq_method+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
-        data[csvProperties.getIndex(LSTAR+eq_method+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LSTAR+MQ_RST)] = Utils.ExtractValue(mq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+MQ_SYM)] = Utils.ExtractValue(mq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+EQ_RST)] = Utils.ExtractValue(eq_rst.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+EQ_SYM)] = Utils.ExtractValue(eq_sym.getStatisticalData().getSummary());
+        data[csvProperties.getIndex(LSTAR+EQs)] = String.valueOf(experiment.getRounds().getCount());
+        data[csvProperties.getIndex(LSTAR+TOTAL_RST)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_rst.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_rst.getStatisticalData().getSummary())));
+        data[csvProperties.getIndex(LSTAR+TOTAL_SYM)] = String.valueOf(Long.parseLong(Utils.ExtractValue(mq_sym.getStatisticalData().getSummary()))+ Long.parseLong(Utils.ExtractValue(eq_sym.getStatisticalData().getSummary())));
 
 
 
@@ -377,8 +411,8 @@ public class Run_experiment {
                         resetStepCount, // reset step count after counterexample
                         rnd_seed // make results reproducible
                 );
-                logger.info("EquivalenceOracle: RandomWalkEQOracle(" + restartProbability + "," + maxSteps + ","
-                        + resetStepCount + ")");
+//                logger.info("EquivalenceOracle: RandomWalkEQOracle(" + restartProbability + "," + maxSteps + ","
+//                        + resetStepCount + ")");
                 break;
             case "rndWords":
                 // create RandomWordsEQOracle
@@ -387,12 +421,12 @@ public class Run_experiment {
                 minLength = learn_props.getRndWords_minLength();
                 rnd_long = rnd_seed.nextLong();
                 rnd_seed.setSeed(rnd_long);
-                System.out.println("max test");
-                System.out.println(maxTests);
+//                System.out.println("max test");
+//                System.out.println(maxTests);
 
                 eqOracle = new RandomWordsEQOracle<>(oracleForEQoracle, minLength, maxLength, maxTests, rnd_seed);
-                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
-                        + ", " + rnd_long + ")");
+//                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
+//                        + ", " + rnd_long + ")");
                 break;
 
             case "rndWordsBig":
@@ -404,18 +438,18 @@ public class Run_experiment {
                 rnd_seed.setSeed(rnd_long);
 
                 eqOracle = new RandomWordsEQOracle<>(oracleForEQoracle, minLength, maxLength, maxTests, rnd_seed);
-                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
-                        + ", " + rnd_long + ")");
+//                logger.info("EquivalenceOracle: RandomWordsEQOracle(" + minLength + ", " + maxLength + ", " + maxTests
+//                        + ", " + rnd_long + ")");
                 break;
             case "wp":
                 maxDepth = learn_props.getW_maxDepth();
                 eqOracle = new WpMethodEQOracle<>(oracleForEQoracle, maxDepth);
-                logger.info("EquivalenceOracle: WpMethodEQOracle(" + maxDepth + ")");
+//                logger.info("EquivalenceOracle: WpMethodEQOracle(" + maxDepth + ")");
                 break;
             case "w":
                 maxDepth = learn_props.getW_maxDepth();
                 eqOracle = new WMethodEQOracle<>(oracleForEQoracle, maxDepth);
-                logger.info("EquivalenceOracle: WMethodQsizeEQOracle(" + maxDepth + ")");
+//                logger.info("EquivalenceOracle: WMethodQsizeEQOracle(" + maxDepth + ")");
                 break;
             case "wrnd":
                 minimalSize = learn_props.getWhyp_minLen();
@@ -425,13 +459,13 @@ public class Run_experiment {
                 rnd_seed.setSeed(rnd_long);
 
                 eqOracle = new RandomWMethodEQOracle<>(oracleForEQoracle, minimalSize, rndLength, bound, rnd_seed, 1);
-                logger.info("EquivalenceOracle: RandomWMethodEQOracle(" + minimalSize + "," + rndLength + "," + bound
-                        + "," + rnd_long + ")");
+//                logger.info("EquivalenceOracle: RandomWMethodEQOracle(" + minimalSize + "," + rndLength + "," + bound
+//                        + "," + rnd_long + ")");
                 break;
             default:
                 maxDepth = 2;
                 eqOracle = new WMethodEQOracle<>(oracleForEQoracle, maxDepth);
-                logger.info("EquivalenceOracle: WMethodEQOracle(" + maxDepth + ")");
+//                logger.info("EquivalenceOracle: WMethodEQOracle(" + maxDepth + ")");
                 break;
         }
         return eqOracle;//        return new WpMethodEQOracle<>(oracleForEQoracle, 4);
@@ -481,5 +515,13 @@ public class Run_experiment {
         token2 = token2.append(tokens[1]);
         return Pair.of(tokens[0], token2);
     };
+
+    private static Options createOptions() {
+        Options options = new Options();
+        options.addOption(SRC_DIR, true, "Input directory");
+        options.addOption(EQUIVALENCE_METHOD, true, "Equivalence method, options: wp, w, wrnd, rndWords, rndWordsBig, rndWalk");
+        options.addOption(EXPERIMENT_REPEAT, true, "Number of repeating the experiment");
+        return options;
+    }
 
 }
