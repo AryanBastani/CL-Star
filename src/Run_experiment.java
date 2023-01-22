@@ -105,8 +105,8 @@ public class Run_experiment {
                 equivalence_method = experimentProperties.getProp("eq_query");
             }
             int repeat;
-            if (line.hasOption(SRC_DIR)) {
-                repeat = Integer.parseInt(line.getOptionValue(SRC_DIR));
+            if (line.hasOption(EXPERIMENT_REPEAT)) {
+                repeat = Integer.parseInt(line.getOptionValue(EXPERIMENT_REPEAT));
             }else{
                 repeat = Integer.parseInt(experimentProperties.getProp(EXPERIMENT_REPEAT));
             }
