@@ -49,7 +49,7 @@ Getting Started
 
     You can find more instructions to run your own benchmark or re-build the project in the next section.
 
-
+    You can close the docker bash with the “exit” command.
 ********************************
 Step-by-step instructions
 ********************************
