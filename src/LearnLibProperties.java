@@ -60,28 +60,22 @@ public class LearnLibProperties {
         return instance;
     }
 
-
     public void loadProperties(){
         File f = new File("resources/.learnlib");
         loadProperties(f);
     }
+
     public void loadProperties(File f){
-        if(props!=null){
-            props.clear();
-        }else{
-            props = new Properties();
-        }
+        initializeProps();
 
         if(f.exists()){
-            InputStream in;
-            try {
-                in = new FileInputStream(f);
-                props.load(in);
-                in.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            loadTheFile(f);
         }
+        
+        initializeVariables();
+    }
+
+    private void initializeVariables(){
         projection = Boolean.valueOf(props.getProperty(PROJECTION, "false"));
 
         rndWalk_restartProbability 	= Double .valueOf(props.getProperty(RND_WALK+RESTART_PROBABILITY, "0.03"));
@@ -92,16 +86,31 @@ public class LearnLibProperties {
         rndWords_maxLength 			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_LENGTH, "200"));
         rndWords_maxTests  			= Integer.valueOf(props.getProperty(RND_WORDS+MAX_TESTS, "500"));
 
-//        whyp_minLen 	= Integer.valueOf(props.getProperty(WEQ+MIN_LENGTH,"2"));
-//        whyp_rndLen 	= Integer.valueOf(props.getProperty(WEQ+RND_LENGTH,"20"));
-//        whyp_bound 	= Integer.valueOf(props.getProperty(WEQ+MAX_TESTS,"200000"));
-
 
         w_maxDepth 				= Integer.valueOf(props.getProperty(W+MAX_DEPTH,"2"));
 
         revalMode				= String.valueOf(props.getProperty(REVAL_MODE,REVAL_LEARNER));
+    }
 
+    private void initializeProps(){
+        if(props!=null){
+            props.clear();
+        }
+        else{
+            props = new Properties();
+        }
+    }
 
+    private void loadTheFile(File f){
+        InputStream in;
+        try {
+            in = new FileInputStream(f);
+            props.load(in);
+            in.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public double getRndWalk_restartProbability() {
