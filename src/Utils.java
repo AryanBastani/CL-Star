@@ -343,7 +343,7 @@ public class Utils {
 
 //            Visualization.visualize(component, component.getInputAlphabet());
             if (productDFA == null) productDFA = new ProductDFA<>(component);
-            else productDFA.interleaving_parallel_composition(component);
+            else productDFA.interleavingParallelComposition(component);
             comp_num++;
         }
         return productDFA;

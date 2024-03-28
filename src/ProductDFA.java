@@ -19,7 +19,7 @@ public class ProductDFA<I> {
     private Object Arrays;
     private Map<String,Integer> states;
     private Integer sf;
-    String initial_label;
+    String initialLabel;
     private CompactDFA<I> productDFA;
     private I[] sigma1;
     private I[] sigma2;
@@ -28,7 +28,7 @@ public class ProductDFA<I> {
         this.dfa = dfa1;
     }
 
-    public ProductDFA<I> interleaving_parallel_composition(CompactDFA<I> dfa2){
+    public ProductDFA<I> interleavingParallelComposition(CompactDFA<I> dfa2){
         initializeVars(dfa2);
         generateProductDFA();
         setFirstState();
@@ -43,16 +43,16 @@ public class ProductDFA<I> {
         this.dfa = dfa;
     }
 
-    private void addNewTransition(I action, Integer s1, Integer s2, Integer si, boolean sigma1loop){
+    private void addNewTransition(I action, Integer s1, Integer s2, Integer si, boolean sigma1Loop){
         Integer tgt = this.dfa.getTransition(s1, action);
-        String tgt_label = Integer.toString(tgt) + "_" + Integer.toString(s2);
-        if(!sigma1loop){
+        String tgtLabel = Integer.toString(tgt) + "_" + Integer.toString(s2);
+        if(!sigma1Loop){
             tgt = this.dfa2.getTransition(s2, action);
-            tgt_label = Integer.toString(s1) + "_" + Integer.toString(tgt);
+            tgtLabel = Integer.toString(s1) + "_" + Integer.toString(tgt);
         }
 
-        if(!states.containsKey(tgt_label)) states.put(tgt_label, productDFA.addState());
-        sf = states.get(tgt_label);
+        if(!states.containsKey(tgtLabel)) states.put(tgtLabel, productDFA.addState());
+        sf = states.get(tgtLabel);
         productDFA.addTransition(si, action, sf, null);
     }
 
@@ -79,12 +79,12 @@ public class ProductDFA<I> {
 
         productDFA = new CompactDFA<I>(Alphabets.fromArray(sigma));
         states = new HashMap<String, Integer>();
-        initial_label = Integer.toString(dfa.getInitialState()) +
+        initialLabel = Integer.toString(dfa.getInitialState()) +
                 "_" + Integer.toString(this.dfa2.getInitialState());
     }
 
     private void setFirstState(){
-        Integer s0 = states.get(initial_label);
+        Integer s0 = states.get(initialLabel);
         productDFA.setInitialState(s0);
         this.setDfa(productDFA);
     }
