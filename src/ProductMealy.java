@@ -30,9 +30,7 @@ public class ProductMealy{
 
         // Creating the alphabet of the merged FSM
         Alphabet<String> alphabet = Alphabets.fromCollection(MergeAlphabet(alphabet_1, alphabet_2));
-//		System.out.println("alphabet: " + alphabet.toString());
         CompactMealy<String, Word<String>> mealy = new CompactMealy(alphabet);
-//		System.out.println(mealy.getStates());
 
         int states_num = states_1.size() * states_2.size();
         int states_map[][] = new int[states_num][3];
@@ -48,14 +46,10 @@ public class ProductMealy{
         while (states_queue.size() != 0) {
             int current_state = states_queue.remove();
             mealy.addState();
-//			System.out.println("\ncurrent state: " + current_state);
             int s_1 = states_map[current_state][1];
             int s_2 = states_map[current_state][2];
-//			System.out.println("s_1: " + s_1);
-//			System.out.println("s_2: " + s_2);
 
             for (String a : alphabet) {
-//				System.out.println(a);
 
                 int new_s_1 = -10;
                 int new_s_2 = -10;
@@ -97,7 +91,6 @@ public class ProductMealy{
                     }
 
                     int equivalent_state = EquivalentState(new_s_1, new_s_2, states_map);
-//					System.out.println("equivalent state:" + equivalent_state);
 
                     String output_1_string = "";
                     String output_2_string = "";
@@ -122,10 +115,8 @@ public class ProductMealy{
                         }
                     }
 
-//					System.out.println("output list:" + output_list);
                     String output_string = String.join(",", output_list);
                     Word<String> output = Word.fromSymbols(output_string);
-//					System.out.println("output:" + output);
 
                     if (equivalent_state == -1) {
                         merged_state += 1;
@@ -137,10 +128,6 @@ public class ProductMealy{
                     } else {
                         mealy.setTransition(current_state, a, equivalent_state, output);
                     }
-
-//					System.out
-//							.println(current_state + " " + a + "/ " + mealy.getTransition(current_state, a).getOutput()
-//									+ " " + mealy.getTransition(current_state, a).getSuccId() + "\n");
                 }
 
             }
@@ -148,7 +135,6 @@ public class ProductMealy{
         }
 
         mealy.setInitialState(0);
-//		System.out.println("\n" + Arrays.deepToString(states_map));
         this.fsm = mealy;
         return this;
     }
