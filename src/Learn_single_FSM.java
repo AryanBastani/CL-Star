@@ -362,9 +362,9 @@ public class Learn_single_FSM {
         switch (eq_method) {
             case "rndWalk":
                 // create RandomWalkEQOracle
-                restartProbability = learn_props.getRndWalk_restartProbability();
-                maxSteps = learn_props.getRndWalk_maxSteps();
-                resetStepCount = learn_props.getRndWalk_resetStepsCount();
+                restartProbability = learn_props.getRndWalkRestartProbability();
+                maxSteps = learn_props.getRndWalkMaxSteps();
+                resetStepCount = learn_props.getRndWalkResetStepsCount();
 
                 eqOracle = new RandomWalkEQOracle<String, Word<String>>(eq_sul, // sul
                         restartProbability, // reset SUL w/ this probability before a step
@@ -377,9 +377,9 @@ public class Learn_single_FSM {
                 break;
             case "rndWords":
                 // create RandomWordsEQOracle
-                maxTests = learn_props.getRndWords_maxTests();
-                maxLength = learn_props.getRndWords_maxLength();
-                minLength = learn_props.getRndWords_minLength();
+                maxTests = learn_props.getRndWordsMaxTests();
+                maxLength = learn_props.getRndWordsMaxLength();
+                minLength = learn_props.getRndWordsMinLength();
                 rnd_long = rnd_seed.nextLong();
                 rnd_seed.setSeed(rnd_long);
 //                System.out.println("max test");
@@ -394,7 +394,7 @@ public class Learn_single_FSM {
                 // create RandomWordsEQOracle
                 maxTests = 2000;
                 maxLength = 200;
-                minLength = learn_props.getRndWords_minLength();
+                minLength = learn_props.getRndWordsMinLength();
                 rnd_long = rnd_seed.nextLong();
                 rnd_seed.setSeed(rnd_long);
 
@@ -403,19 +403,19 @@ public class Learn_single_FSM {
 //                        + ", " + rnd_long + ")");
                 break;
             case "wp":
-                maxDepth = learn_props.getW_maxDepth();
+                maxDepth = learn_props.getWMaxDepth();
                 eqOracle = new WpMethodEQOracle<>(oracleForEQoracle, maxDepth);
 //                logger.info("EquivalenceOracle: WpMethodEQOracle(" + maxDepth + ")");
                 break;
             case "w":
-                maxDepth = learn_props.getW_maxDepth();
+                maxDepth = learn_props.getWMaxDepth();
                 eqOracle = new WMethodEQOracle<>(oracleForEQoracle, maxDepth);
 //                logger.info("EquivalenceOracle: WMethodQsizeEQOracle(" + maxDepth + ")");
                 break;
             case "wrnd":
-                minimalSize = learn_props.getWhyp_minLen();
-                rndLength = learn_props.getWhyp_rndLen();
-                bound = learn_props.getWhyp_bound();
+                minimalSize = learn_props.getWhypMinLen();
+                rndLength = learn_props.getWhypRndLen();
+                bound = learn_props.getWhypBound();
                 rnd_long = rnd_seed.nextLong();
                 rnd_seed.setSeed(rnd_long);
 
