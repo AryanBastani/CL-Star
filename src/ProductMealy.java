@@ -13,36 +13,66 @@ import java.util.*;
 public class ProductMealy{
 
     CompactMealy<String, Word<String>> fsm;
+    CompactMealy<String, Word<String>> mealy_1;
+    CompactMealy<String, Word<String>> mealy_2;
+    Collection<Integer> states_1;
+    Collection<Integer> states_2;
+    Alphabet<String> alphabet_1;
+    Alphabet<String> alphabet_2;
+    Alphabet<String> alphabet;
+    CompactMealy<String, Word<String>> mealy;
+    int states_map[][];
+    Queue<Integer> states_queue;
     int components_count;
+
     public ProductMealy( CompactMealy<String, Word<String>> m1) {
         this.fsm = m1;
     }
 
-    public ProductMealy mergeFSMs(CompactMealy<String, Word<String>> mealy_2){
-        // TODO Auto-generated method stub
+    public ProductMealy mergeFSMs(CompactMealy<String, Word<String>> m2){
+        initializeVariables(m2);
+        generateTheMealy();
+        setFirstState();
 
-        CompactMealy<String, Word<String>> mealy_1 = fsm;
-        Collection<Integer> states_1 = mealy_1.getStates();
-        Collection<Integer> states_2 = mealy_2.getStates();
+        return this;
+    }
 
-        Alphabet<String> alphabet_1 = mealy_1.getInputAlphabet();
-        Alphabet<String> alphabet_2 = mealy_2.getInputAlphabet();
+    private void setFirstState(){
+        mealy.setInitialState(0);
+        this.fsm = mealy;
+    }
+
+    private void initializeVariables(CompactMealy<String, Word<String>> m2){
+        mealy_1 = fsm;
+        mealy_2 = m2;
+        states_1 = mealy_1.getStates();
+        states_2 = mealy_2.getStates();
+
+        alphabet_1 = mealy_1.getInputAlphabet();
+        alphabet_2 = mealy_2.getInputAlphabet();
 
         // Creating the alphabet of the merged FSM
-        Alphabet<String> alphabet = Alphabets.fromCollection(MergeAlphabet(alphabet_1, alphabet_2));
-        CompactMealy<String, Word<String>> mealy = new CompactMealy(alphabet);
+        alphabet = Alphabets.fromCollection(MergeAlphabet(alphabet_1, alphabet_2));
+        mealy = new CompactMealy(alphabet);
 
+        initializestatesNum();
+        
+        states_map[0][0] = states_map[0][1] = states_map[0][2] = 0;
+
+        states_queue = new LinkedList<>();
+        states_queue.add(0);
+    }
+
+    private void initializestatesNum(){
         int states_num = states_1.size() * states_2.size();
-        int states_map[][] = new int[states_num][3];
+        states_map = new int[states_num][3];
         for (int[] array : states_map) {
             Arrays.fill(array, -1);
         }
+    }
+
+    private void generateTheMealy(){
         int merged_state = 0;
-        states_map[merged_state][0] = states_map[merged_state][1] = states_map[merged_state][2] = 0;
-
-        Queue<Integer> states_queue = new LinkedList<>();
-        states_queue.add(merged_state);
-
         while (states_queue.size() != 0) {
             int current_state = states_queue.remove();
             mealy.addState();
@@ -133,10 +163,6 @@ public class ProductMealy{
             }
 
         }
-
-        mealy.setInitialState(0);
-        this.fsm = mealy;
-        return this;
     }
 
     private Collection MergeAlphabet(Alphabet<String> a_1, Alphabet<String> a_2){
