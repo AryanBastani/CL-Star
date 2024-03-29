@@ -24,6 +24,16 @@ public class ProductMealy{
     int states_map[][];
     Queue<Integer> states_queue;
     int components_count;
+    int new_s_1;
+    int new_s_2;
+
+    Word<String> output_1;
+    Word<String> output_2;
+    @Nullable
+    CompactMealyTransition<Word<String>> transition_1;
+    @Nullable
+    CompactMealyTransition<Word<String>> transition_2;
+    int merged_state;
 
     public ProductMealy( CompactMealy<String, Word<String>> m1) {
         this.fsm = m1;
@@ -72,96 +82,112 @@ public class ProductMealy{
     }
 
     private void generateTheMealy(){
-        int merged_state = 0;
+        merged_state = 0;
         while (states_queue.size() != 0) {
             int current_state = states_queue.remove();
             mealy.addState();
             int s_1 = states_map[current_state][1];
             int s_2 = states_map[current_state][2];
 
-            for (String a : alphabet) {
+            generateForEachAlph(current_state, s_1, s_2);
+        }
+    }
 
-                int new_s_1 = -10;
-                int new_s_2 = -10;
+    private void generateForEachAlph(int current_state, int s_1, int s_2){
+        for (String sigmai : alphabet) {
+            initializeForEach();
+            setSeperateTransition(sigmai, s_1,true);
+            setSeperateTransition(sigmai, s_2,false);
 
-                Word<String> output_1 = null;
-                Word<String> output_2 = null;
-
-                @Nullable
-                CompactMealyTransition<Word<String>> transition_1 = null;
-                @Nullable
-                CompactMealyTransition<Word<String>> transition_2 = null;
-
-                if (alphabet_1.contains(a)) {
-                    transition_1 = mealy_1.getTransition(s_1, a);
-                }
-                if (alphabet_2.contains(a)) {
-                    transition_2 = mealy_2.getTransition(s_2, a);
-                }
-                if (transition_1 != null || transition_2 != null) {
-                    if (transition_1 != null && transition_2 != null) {
-                        output_1 = transition_1.getOutput();
-                        new_s_1 = transition_1.getSuccId();
-
-                        output_2 = transition_2.getOutput();
-                        new_s_2 = transition_2.getSuccId();
-
-                    } else if (transition_1 != null && transition_2 == null) {
-                        output_1 = transition_1.getOutput();
-                        new_s_1 = transition_1.getSuccId();
-
-                        new_s_2 = s_2;
-
-                    } else if (transition_1 == null && transition_2 != null) {
-                        new_s_1 = s_1;
-
-                        output_2 = transition_2.getOutput();
-                        new_s_2 = transition_2.getSuccId();
-
-                    }
-
-                    int equivalent_state = EquivalentState(new_s_1, new_s_2, states_map);
-
-                    String output_1_string = "";
-                    String output_2_string = "";
-                    if (output_1 != null) {
-                        output_1_string = output_1.toString();
-                    }
-                    if (output_2 != null) {
-                        output_2_string = output_2.toString();
-                    }
-                    List<String> output_1_list = new ArrayList<String>(Arrays.asList(output_1_string.split(",")));
-                    List<String> output_2_list = new ArrayList<String>(Arrays.asList(output_2_string.split(",")));
-                    List<String> output_list = new ArrayList<>();
-                    for (String string_1 : output_1_list) {
-                        if (!string_1.equals("")) {
-                            output_list.add(string_1);
-                        }
-                    }
-
-                    for (String string_1 : output_2_list) {
-                        if (!string_1.equals("") && !output_list.contains(string_1)) {
-                            output_list.add(string_1);
-                        }
-                    }
-
-                    String output_string = String.join(",", output_list);
-                    Word<String> output = Word.fromSymbols(output_string);
-
-                    if (equivalent_state == -1) {
-                        merged_state += 1;
-                        mealy.setTransition(current_state, a, merged_state, output);
-                        states_queue.add(merged_state);
-                        states_map[merged_state][0] = merged_state;
-                        states_map[merged_state][1] = new_s_1;
-                        states_map[merged_state][2] = new_s_2;
-                    } else {
-                        mealy.setTransition(current_state, a, equivalent_state, output);
-                    }
-                }
-
+            if (transition_1 != null || transition_2 != null) {
+                mergeTransitions(sigmai, s_1, s_2, current_state);
             }
 
+        }
+    }
+
+    private void mergeTransitions(String sigmai, int s_1, int s_2, int current_state){
+        updateOutsAndStates(s_1, s_2);
+
+        int equivalent_state = EquivalentState(new_s_1, new_s_2, states_map);
+
+        String output_1_string = "";
+        String output_2_string = "";
+        if (output_1 != null) {
+            output_1_string = output_1.toString();
+        }
+        if (output_2 != null) {
+            output_2_string = output_2.toString();
+        }
+        List<String> output_1_list = new ArrayList<String>(Arrays.asList(output_1_string.split(",")));
+        List<String> output_2_list = new ArrayList<String>(Arrays.asList(output_2_string.split(",")));
+        List<String> output_list = new ArrayList<>();
+        for (String string_1 : output_1_list) {
+            if (!string_1.equals("")) {
+                output_list.add(string_1);
+            }
+        }
+
+        for (String string_1 : output_2_list) {
+            if (!string_1.equals("") && !output_list.contains(string_1)) {
+                output_list.add(string_1);
+            }
+        }
+
+        String output_string = String.join(",", output_list);
+        Word<String> output = Word.fromSymbols(output_string);
+
+        if (equivalent_state == -1) {
+            merged_state += 1;
+            mealy.setTransition(current_state, sigmai, merged_state, output);
+            states_queue.add(merged_state);
+            states_map[merged_state][0] = merged_state;
+            states_map[merged_state][1] = new_s_1;
+            states_map[merged_state][2] = new_s_2;
+        } else {
+            mealy.setTransition(current_state, sigmai, equivalent_state, output);
+        }
+    }
+
+    private void updateOutsAndStates(int s_1, int s_2){
+        if (transition_1 != null && transition_2 != null) {
+            output_1 = transition_1.getOutput();
+            new_s_1 = transition_1.getSuccId();
+
+            output_2 = transition_2.getOutput();
+            new_s_2 = transition_2.getSuccId();
+        }
+        else if (transition_1 != null && transition_2 == null) {
+            output_1 = transition_1.getOutput();
+            new_s_1 = transition_1.getSuccId();
+
+            new_s_2 = s_2;
+        }
+        else if (transition_1 == null && transition_2 != null) {
+            new_s_1 = s_1;
+
+            output_2 = transition_2.getOutput();
+            new_s_2 = transition_2.getSuccId();
+        }
+    }
+
+    private void initializeForEach(){
+        new_s_1 = -10;
+        new_s_2 = -10;
+
+        output_1 = null;
+        output_2 = null;
+
+        transition_1 = null;
+        transition_2 = null;
+    }
+
+    private void setSeperateTransition(String sigmai, int si, boolean isFirstAlph){
+        if (isFirstAlph && alphabet_1.contains(sigmai)) {
+            transition_1 = mealy_1.getTransition(si, sigmai);
+        }
+        else if (!isFirstAlph && alphabet_2.contains(sigmai)) {
+            transition_2 = mealy_2.getTransition(si, sigmai);
         }
     }
 
