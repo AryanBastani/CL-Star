@@ -111,32 +111,19 @@ public class ProductMealy{
 
         int equivalent_state = EquivalentState(new_s_1, new_s_2, states_map);
 
-        String output_1_string = "";
-        String output_2_string = "";
-        if (output_1 != null) {
-            output_1_string = output_1.toString();
-        }
-        if (output_2 != null) {
-            output_2_string = output_2.toString();
-        }
-        List<String> output_1_list = new ArrayList<String>(Arrays.asList(output_1_string.split(",")));
-        List<String> output_2_list = new ArrayList<String>(Arrays.asList(output_2_string.split(",")));
-        List<String> output_list = new ArrayList<>();
-        for (String string_1 : output_1_list) {
-            if (!string_1.equals("")) {
-                output_list.add(string_1);
-            }
-        }
+        String output_1_string = setOutString(output_1);
+        String output_2_string = setOutString(output_2);
 
-        for (String string_1 : output_2_list) {
-            if (!string_1.equals("") && !output_list.contains(string_1)) {
-                output_list.add(string_1);
-            }
-        }
+        List<String> output_list = setOutList(output_1_string, output_2_string);
 
         String output_string = String.join(",", output_list);
         Word<String> output = Word.fromSymbols(output_string);
 
+        setTheMealy(current_state, equivalent_state, sigmai, output);
+    }
+
+    private void setTheMealy(int current_state, int equivalent_state,
+                             String sigmai, Word<String> output){
         if (equivalent_state == -1) {
             merged_state += 1;
             mealy.setTransition(current_state, sigmai, merged_state, output);
@@ -144,9 +131,37 @@ public class ProductMealy{
             states_map[merged_state][0] = merged_state;
             states_map[merged_state][1] = new_s_1;
             states_map[merged_state][2] = new_s_2;
-        } else {
+        }
+        else {
             mealy.setTransition(current_state, sigmai, equivalent_state, output);
         }
+    }
+
+    private List<String> setOutList(String output_1_string, String output_2_string){
+        List<String> output_1_list = new ArrayList<String>(Arrays.asList(output_1_string.split(",")));
+        List<String> output_2_list = new ArrayList<String>(Arrays.asList(output_2_string.split(",")));
+        List<String> output_list = new ArrayList();
+
+        for (String string_1 : output_1_list) {
+            if (!string_1.equals("")) {
+                output_list.add(string_1);
+            }
+        }
+        for (String string_1 : output_2_list) {
+            if (!string_1.equals("") && !output_list.contains(string_1)) {
+                output_list.add(string_1);
+            }
+        }
+
+        return(output_list);
+    }
+
+    private String setOutString(Word<String> outputi){
+        String output_i_string = "";
+        if (outputi != null) {
+            output_i_string = outputi.toString();
+        }
+        return (output_i_string);
     }
 
     private void updateOutsAndStates(int s_1, int s_2){
